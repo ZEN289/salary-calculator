@@ -1,1141 +1,2346 @@
 <!DOCTYPE html>
 <html lang="ru" data-theme="space">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Калькулятор зарплаты</title>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0b0d17;--surface:#12151f;--surface2:#1a1e2e;
-  --border:rgba(255,255,255,0.07);
-  --accent:#6c63ff;--accent2:#ff6584;--accent3:#43e97b;
-  --text:#e8eaf6;--muted:#6b7280;--glow:rgba(108,99,255,0.4);
-  --orb1:rgba(108,99,255,0.18);--orb2:rgba(255,101,132,0.12);
-  --orb3:rgba(67,233,123,0.08);--orb4:rgba(0,242,234,0.07);
-}
-body{font-family:'Jost',sans-serif;background:var(--bg);min-height:100vh;
-  display:flex;align-items:center;justify-content:center;padding:30px 16px;
-  overflow-x:hidden;color:var(--text)}
-body::before{content:'';position:fixed;inset:0;
-  background:radial-gradient(ellipse 60% 50% at 20% 20%,rgba(108,99,255,0.12) 0%,transparent 70%),
-             radial-gradient(ellipse 50% 40% at 80% 80%,rgba(255,101,132,0.08) 0%,transparent 70%);
-  pointer-events:none;z-index:0}
-body::after{content:'';position:fixed;inset:0;
-  background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),
-                   linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);
-  background-size:40px 40px;pointer-events:none;z-index:0;
-  animation:gridShimmer 6s ease-in-out infinite}
-@keyframes gridShimmer{0%,100%{opacity:.6}50%{opacity:1}}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Калькулятор зарплаты</title>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #0b0d17;
+            --surface: #12151f;
+            --surface2: #1a1e2e;
+            --border: rgba(255,255,255,0.07);
+            --accent: #6c63ff;
+            --accent2: #ff6584;
+            --accent3: #43e97b;
+            --text: #e8eaf6;
+            --muted: #6b7280;
+            --glow: rgba(108,99,255,0.4);
+        }
+        body {
+            font-family: 'Jost', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            padding: 30px 16px;
+            overflow-x: hidden;
+            color: var(--text);
+        }
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background: radial-gradient(ellipse 60% 50% at 20% 20%, rgba(108,99,255,0.12) 0%, transparent 70%),
+                        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(255,101,132,0.08) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
+        }
+        body::after {
+            content: ''; position: fixed; inset: 0;
+            background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none; z-index: 0;
+        }
 
-.bg-orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
-.bg-orb-1{width:500px;height:500px;background:radial-gradient(circle,var(--orb1) 0%,transparent 70%);top:-100px;left:-100px;animation:orbDrift1 12s ease-in-out infinite}
-.bg-orb-2{width:400px;height:400px;background:radial-gradient(circle,var(--orb2) 0%,transparent 70%);bottom:-80px;right:-80px;animation:orbDrift2 14s ease-in-out 1s infinite}
-.bg-orb-3{width:300px;height:300px;background:radial-gradient(circle,var(--orb3) 0%,transparent 70%);top:40%;left:30%;animation:orbDrift3 16s ease-in-out 3s infinite}
-.bg-orb-4{width:250px;height:250px;background:radial-gradient(circle,var(--orb4) 0%,transparent 70%);top:20%;right:20%;animation:orbDrift4 13s ease-in-out 5s infinite}
-@keyframes orbDrift1{0%,100%{opacity:.6;transform:translate(0,0) scale(1)}25%{opacity:.9;transform:translate(60px,40px) scale(1.1)}50%{opacity:.5;transform:translate(30px,80px) scale(.95)}75%{opacity:.8;transform:translate(-30px,30px) scale(1.05)}}
-@keyframes orbDrift2{0%,100%{opacity:.5;transform:translate(0,0) scale(1)}30%{opacity:.8;transform:translate(-50px,-30px) scale(1.08)}60%{opacity:.4;transform:translate(-20px,-60px) scale(.92)}}
-@keyframes orbDrift3{0%,100%{opacity:.3;transform:translate(0,0) scale(1)}40%{opacity:.6;transform:translate(40px,-50px) scale(1.15)}70%{opacity:.2;transform:translate(-40px,20px) scale(.88)}}
-@keyframes orbDrift4{0%,100%{opacity:.4;transform:translate(0,0) scale(1)}35%{opacity:.7;transform:translate(-30px,50px) scale(1.12)}65%{opacity:.2;transform:translate(50px,20px) scale(.9)}}
+        /* SCREENS */
+        .screen { display: none; position: relative; z-index: 1; width: 100%; max-width: 520px; }
+        .screen.active { display: block; animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) both; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(28px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
 
-.star-field{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.shooting-star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;opacity:0;animation:shoot var(--sdur,3s) linear var(--sdelay,0s) infinite}
-@keyframes shoot{0%{opacity:0;transform:translate(0,0) scale(1)}5%{opacity:1}100%{opacity:0;transform:translate(var(--sx,-300px),var(--sy,200px)) scale(.2)}}
+        /* CARD */
+        .card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 24px; padding: 40px 36px;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 40px 80px rgba(0,0,0,0.6);
+        }
 
-/* ── SCREENS ── */
-.screen{display:none;position:relative;z-index:1;width:100%;max-width:520px}
-.screen.active{display:block;animation:fadeUp .55s cubic-bezier(.16,1,.3,1) both}
-@keyframes fadeUp{from{opacity:0;transform:translateY(28px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+        /* HOME */
+        .home-header { text-align: center; margin-bottom: 36px; }
+        .home-icon {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 18px; display: inline-flex; align-items: center; justify-content: center;
+            font-size: 30px; margin-bottom: 16px;
+            box-shadow: 0 8px 24px var(--glow);
+            animation: pulse 3s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%,100% { box-shadow: 0 8px 24px var(--glow); }
+            50%      { box-shadow: 0 8px 40px rgba(108,99,255,0.7); }
+        }
+        .home-title {
+            font-family: 'Unbounded', sans-serif; font-size: 22px; font-weight: 700;
+            background: linear-gradient(135deg, #fff 30%, rgba(255,255,255,0.5));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .home-sub { font-size: 13px; color: var(--muted); margin-top: 6px; font-weight: 300; }
 
-/* ── CARD ── */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:40px 36px;
-  box-shadow:0 0 0 1px rgba(255,255,255,.04),0 40px 80px rgba(0,0,0,.6)}
+        .platform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+        .platform-btn {
+            position: relative; border: none; border-radius: 20px; padding: 28px 16px 24px;
+            cursor: pointer; font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 600;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            transition: transform 0.18s, box-shadow 0.2s; overflow: hidden;
+        }
+        .platform-btn::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .platform-btn:hover { transform: translateY(-4px); }
+        .platform-btn:active { transform: scale(0.97); }
+        .platform-btn .p-icon { font-size: 36px; line-height: 1; }
+        .platform-btn .p-label { font-size: 14px; letter-spacing: 0.03em; }
+        .platform-btn .p-status {
+            font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 400;
+            padding: 3px 10px; border-radius: 20px; background: rgba(255,255,255,0.15);
+        }
+        .btn-yt { background: linear-gradient(135deg, #ff1744, #d50000); color: #fff; box-shadow: 0 8px 28px rgba(255,23,68,0.4); }
+        .btn-yt:hover { box-shadow: 0 12px 36px rgba(255,23,68,0.6); }
+        .btn-tt { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #fff; border: 1px solid rgba(0,242,234,0.3); box-shadow: 0 8px 28px rgba(0,242,234,0.15); }
+        .btn-tt:hover { box-shadow: 0 12px 36px rgba(0,242,234,0.3); }
+        .total-btn-wrap { margin-top: 20px; }
 
-/* ── HOME ── */
-.home-header{text-align:center;margin-bottom:36px;position:relative}
-.home-icon{width:64px;height:64px;background:linear-gradient(135deg,var(--accent),var(--accent2));
-  border-radius:18px;display:inline-flex;align-items:center;justify-content:center;
-  font-size:30px;margin-bottom:16px;box-shadow:0 8px 24px var(--glow);
-  animation:pulse 3s ease-in-out infinite}
-@keyframes pulse{0%,100%{box-shadow:0 8px 24px var(--glow)}50%{box-shadow:0 8px 40px rgba(108,99,255,.7)}}
-.home-title{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:700;
-  background:linear-gradient(135deg,#fff 30%,rgba(255,255,255,.5));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.home-sub{font-size:13px;color:var(--muted);margin-top:6px;font-weight:300}
-.settings-btn{position:absolute;top:0;right:0;width:36px;height:36px;background:var(--surface2);
-  border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;
-  justify-content:center;cursor:pointer;font-size:16px;transition:background .2s}
-.settings-btn:hover{background:rgba(108,99,255,.15)}
+        /* CALC HEADER */
+        .calc-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+        .back-btn {
+            width: 38px; height: 38px; background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--muted); font-size: 18px;
+            transition: background 0.2s, color 0.2s; flex-shrink: 0;
+        }
+        .back-btn:hover { background: rgba(108,99,255,0.15); color: var(--accent); }
+        .calc-header-info { flex: 1; }
+        .calc-platform-badge { font-family: 'Unbounded', sans-serif; font-size: 16px; font-weight: 700; }
+        .calc-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
 
-/* ── MAINT BADGE (home) ── */
-.maint-badge{display:inline-flex;align-items:center;gap:6px;
-  background:rgba(255,80,80,.12);border:1px solid rgba(255,80,80,.3);
-  border-radius:20px;padding:5px 14px;font-size:11px;color:#ff6060;
-  font-family:'Unbounded',sans-serif;font-weight:600;letter-spacing:.06em;
-  margin-bottom:14px;display:none}
+        /* FIELDS */
+        .field { margin-bottom: 18px; }
+        label {
+            display: block; font-size: 12px; font-weight: 500;
+            letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
+        }
+        input, select {
+            width: 100%; padding: 13px 16px;
+            background: var(--surface2); border: 1px solid var(--border); border-radius: 12px;
+            color: var(--text); font-family: 'Jost', sans-serif; font-size: 15px;
+            outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            appearance: none; -webkit-appearance: none;
+        }
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px;
+        }
+        select option { background: #1a1e2e; }
+        input:focus, select:focus { border-color: var(--accent); background: rgba(108,99,255,0.06); box-shadow: 0 0 0 3px rgba(108,99,255,0.15); }
+        input::placeholder { color: var(--muted); }
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
 
-.platform-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px}
-.platform-btn{position:relative;border:none;border-radius:20px;padding:28px 16px 24px;
-  cursor:pointer;font-family:'Unbounded',sans-serif;font-size:13px;font-weight:600;
-  display:flex;flex-direction:column;align-items:center;gap:10px;
-  transition:transform .18s,box-shadow .2s;overflow:hidden}
-.platform-btn::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,.12) 0%,transparent 60%);pointer-events:none}
-.platform-btn:hover{transform:translateY(-4px)}
-.platform-btn:active{transform:scale(.97)}
-.platform-btn .p-icon{font-size:36px;line-height:1}
-.platform-btn .p-label{font-size:14px;letter-spacing:.03em}
-.platform-btn .p-status{font-family:'Jost',sans-serif;font-size:11px;font-weight:400;
-  padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.15)}
-.btn-yt{background:linear-gradient(135deg,#ff1744,#d50000);color:#fff;box-shadow:0 8px 28px rgba(255,23,68,.4)}
-.btn-yt:hover{box-shadow:0 12px 36px rgba(255,23,68,.6)}
-.btn-tt{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;border:1px solid rgba(0,242,234,.3);box-shadow:0 8px 28px rgba(0,242,234,.15)}
-.btn-tt:hover{box-shadow:0 12px 36px rgba(0,242,234,.3)}
+        .section-title {
+            display: flex; align-items: center; gap: 12px;
+            margin: 24px 0 18px;
+            font-family: 'Unbounded', sans-serif; font-size: 11px; font-weight: 600;
+            letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted);
+        }
+        .section-title::before, .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-/* ── ADMIN PANEL (home) ── */
-.admin-panel{margin-top:16px;background:rgba(255,165,0,.06);border:1px solid rgba(255,165,0,.2);
-  border-radius:16px;padding:14px 16px;display:none}
-.admin-panel-header{font-family:'Unbounded',sans-serif;font-size:10px;font-weight:600;
-  letter-spacing:.15em;text-transform:uppercase;color:#f59e0b;margin-bottom:12px;
-  display:flex;align-items:center;gap:6px}
-.maint-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.maint-toggle-label{font-size:13px;color:var(--text)}
-.maint-toggle-label small{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+        /* TIER CARDS */
+        .tiers { display: flex; flex-direction: column; gap: 10px; margin-bottom: 4px; }
+        .tier-card {
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 16px; padding: 16px;
+            display: grid; grid-template-columns: 1fr auto;
+            align-items: center; gap: 12px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            position: relative; overflow: hidden;
+        }
+        .tier-card::before {
+            content: ''; position: absolute;
+            left: 0; top: 0; bottom: 0; width: 3px; border-radius: 3px 0 0 3px;
+        }
+        .tier-card.t1::before { background: rgba(108,99,255,0.7); }
+        .tier-card.t2::before { background: rgba(255,165,0,0.8); }
+        .tier-card.t3::before { background: rgba(67,233,123,0.8); }
+        .tier-card.t-premium::before { background: linear-gradient(180deg, #ffd700, #ff8c00); }
+        .tier-card:focus-within { border-color: rgba(255,255,255,0.15); box-shadow: 0 0 0 2px rgba(108,99,255,0.15); }
 
-/* ── TOGGLE SWITCH ── */
-.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
-.toggle input{opacity:0;width:0;height:0;position:absolute}
-.toggle-track{position:absolute;inset:0;background:var(--surface);border:1px solid var(--border);
-  border-radius:24px;cursor:pointer;transition:background .3s,border-color .3s}
-.toggle-track::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;
-  background:var(--muted);top:2px;left:2px;transition:transform .3s cubic-bezier(.16,1,.3,1),background .3s}
-.toggle input:checked+.toggle-track{background:#ef4444;border-color:#ef4444}
-.toggle input:checked+.toggle-track::after{transform:translateX(20px);background:#fff}
+        .tier-left {}
+        .tier-threshold {
+            font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 700;
+            margin-bottom: 3px;
+        }
+        .tier-threshold.t1-color { color: #a89eff; }
+        .tier-threshold.t2-color { color: #ffaa44; }
+        .tier-threshold.t3-color { color: #43e97b; }
+        .tier-threshold.tp-color  { background: linear-gradient(135deg,#ffd700,#ff8c00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .tier-price {
+            font-size: 12px; color: var(--muted);
+        }
+        .tier-price span { color: var(--text); font-weight: 500; }
 
-.total-btn-wrap{margin-top:20px}
-.btn-primary{width:100%;margin-top:24px;padding:16px;
-  background:linear-gradient(135deg,var(--accent) 0%,#9b59ff 100%);
-  color:#fff;border:none;border-radius:14px;cursor:pointer;
-  font-family:'Unbounded',sans-serif;font-size:13px;font-weight:600;
-  letter-spacing:.05em;position:relative;overflow:hidden;
-  transition:transform .15s,box-shadow .2s;box-shadow:0 4px 20px var(--glow)}
-.btn-primary::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,.15) 0%,transparent 60%);pointer-events:none}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(108,99,255,.6)}
-.btn-primary:active{transform:scale(.98)}
-.btn-yt-calc{background:linear-gradient(135deg,#ff1744,#d50000);box-shadow:0 4px 20px rgba(255,23,68,.4)}
-.btn-yt-calc:hover{box-shadow:0 8px 32px rgba(255,23,68,.6)}
-.btn-tt-calc{background:linear-gradient(135deg,#00f2ea,#ff0050);box-shadow:0 4px 20px rgba(0,242,234,.3)}
-.btn-tt-calc:hover{box-shadow:0 8px 32px rgba(0,242,234,.5)}
-.btn-ghost{width:100%;margin-top:12px;padding:14px;background:transparent;color:var(--muted);
-  border:1px solid var(--border);border-radius:14px;cursor:pointer;
-  font-family:'Jost',sans-serif;font-size:14px;font-weight:400;
-  transition:border-color .2s,color .2s,background .2s}
-.btn-ghost:hover{border-color:var(--accent);color:var(--accent);background:rgba(108,99,255,.06)}
+        .tier-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+        .tier-count-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+        .tier-input {
+            width: 80px; padding: 10px 12px !important;
+            font-size: 18px !important; font-family: 'Unbounded', sans-serif !important;
+            font-weight: 600 !important; text-align: center;
+            border-radius: 10px !important;
+        }
+        .tier-price-edit {
+            width: 80px; padding: 7px 10px !important;
+            font-size: 12px !important; text-align: center;
+            border-radius: 8px !important; color: var(--muted) !important;
+        }
 
-/* ── CALC HEADER ── */
-.calc-header{display:flex;align-items:center;gap:14px;margin-bottom:28px}
-.back-btn{width:38px;height:38px;background:var(--surface2);border:1px solid var(--border);
-  border-radius:10px;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;color:var(--muted);font-size:18px;transition:background .2s,color .2s;flex-shrink:0}
-.back-btn:hover{background:rgba(108,99,255,.15);color:var(--accent)}
-.calc-platform-badge{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700}
-.calc-sub{font-size:12px;color:var(--muted);margin-top:3px}
+        /* BUTTONS */
+        .btn-primary {
+            width: 100%; margin-top: 24px; padding: 16px;
+            background: linear-gradient(135deg, var(--accent) 0%, #9b59ff 100%);
+            color: #fff; border: none; border-radius: 14px; cursor: pointer;
+            font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 600;
+            letter-spacing: 0.05em; position: relative; overflow: hidden;
+            transition: transform 0.15s, box-shadow 0.2s; box-shadow: 0 4px 20px var(--glow);
+        }
+        .btn-primary::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(108,99,255,0.6); }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-yt-calc { background: linear-gradient(135deg,#ff1744,#d50000); box-shadow: 0 4px 20px rgba(255,23,68,0.4); }
+        .btn-yt-calc:hover { box-shadow: 0 8px 32px rgba(255,23,68,0.6); }
+        .btn-tt-calc { background: linear-gradient(135deg,#00f2ea,#ff0050); box-shadow: 0 4px 20px rgba(0,242,234,0.3); }
+        .btn-tt-calc:hover { box-shadow: 0 8px 32px rgba(0,242,234,0.5); }
+        .btn-ghost {
+            width: 100%; margin-top: 12px; padding: 14px;
+            background: transparent; color: var(--muted); border: 1px solid var(--border);
+            border-radius: 14px; cursor: pointer; font-family: 'Jost', sans-serif;
+            font-size: 14px; font-weight: 400;
+            transition: border-color 0.2s, color 0.2s, background 0.2s;
+        }
+        .btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: rgba(108,99,255,0.06); }
 
-/* ── FIELDS ── */
-.field{margin-bottom:18px}
-label{display:block;font-size:12px;font-weight:500;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-input,select{width:100%;padding:13px 16px;background:var(--surface2);
-  border:1px solid var(--border);border-radius:12px;color:var(--text);
-  font-family:'Jost',sans-serif;font-size:15px;outline:none;
-  transition:border-color .2s,box-shadow .2s,background .2s;
-  appearance:none;-webkit-appearance:none}
-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 16px center;padding-right:40px}
-select option{background:#1a1e2e}
-input:focus,select:focus{border-color:var(--accent);background:rgba(108,99,255,.06);box-shadow:0 0 0 3px rgba(108,99,255,.15)}
-input::placeholder{color:var(--muted)}
-input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
-input[type=number]{-moz-appearance:textfield}
+        /* RESULT */
+        .result { margin-top: 20px; overflow: hidden; }
+        .result-error {
+            background: rgba(255,101,132,0.1); border: 1px solid rgba(255,101,132,0.3);
+            border-radius: 16px; padding: 16px 20px; text-align: center;
+            color: var(--accent2); font-size: 14px;
+            transform: translateY(20px); opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.4s;
+        }
+        .result-error.show { transform: translateY(0); opacity: 1; }
 
-.section-title{display:flex;align-items:center;gap:12px;margin:24px 0 18px;
-  font-family:'Unbounded',sans-serif;font-size:11px;font-weight:600;
-  letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
-.section-title::before,.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+        /* TYPEWRITER */
+        .typing::after {
+            content: '|'; display: inline-block; color: var(--accent);
+            font-weight: 300; animation: blink 0.7s step-end infinite; margin-left: 1px;
+        }
+        .typed::after { display: none; }
+        @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0; } }
 
-/* ── VIDEO ENTRY (добавление видео) ── */
-.videos-list{display:flex;flex-direction:column;gap:10px;margin-bottom:4px}
-.video-entry{background:var(--surface2);border:1px solid var(--border);
-  border-radius:16px;padding:14px 16px;position:relative;overflow:hidden;
-  animation:fadeUp .3s cubic-bezier(.16,1,.3,1) both}
-.video-entry::before{content:'';position:absolute;left:0;top:0;bottom:0;
-  width:3px;border-radius:3px 0 0 3px;background:rgba(108,99,255,.5)}
-.video-entry-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.video-entry-num{font-family:'Unbounded',sans-serif;font-size:11px;font-weight:600;
-  color:var(--muted);letter-spacing:.1em}
-.video-entry-del{background:none;border:none;cursor:pointer;color:rgba(255,101,132,.4);
-  font-size:14px;padding:2px 6px;border-radius:6px;width:auto;margin:0;
-  transition:color .2s,background .2s}
-.video-entry-del:hover{color:#ff6584;background:rgba(255,101,132,.1)}
-.video-entry-row{display:flex;gap:10px;align-items:flex-end}
-.video-entry-views{flex:1}
-.video-entry-premium{display:flex;align-items:center;gap:8px;margin-top:8px;
-  padding:8px 12px;background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.15);
-  border-radius:10px;cursor:pointer;transition:background .2s;display:none}
-.video-entry-premium.eligible{display:flex}
-.video-entry-premium.active{background:rgba(255,215,0,.12);border-color:rgba(255,215,0,.3)}
-.video-entry-premium input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:#ffd700;flex-shrink:0}
-.video-entry-premium-label{font-size:12px;color:#ffd700;flex:1}
-.video-entry-premium-bonus{font-family:'Unbounded',sans-serif;font-size:11px;font-weight:600;color:#ffd700}
-.video-entry-result{margin-top:8px;font-size:12px;color:var(--muted);display:none}
-.video-entry-result.show{display:block}
-.video-entry-result strong{color:var(--accent3);font-weight:600}
+        /* OVERLAY */
+        .result-overlay {
+            position: fixed; inset: 0; z-index: 200;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 24px; pointer-events: none; opacity: 0; transition: opacity 0.4s ease;
+        }
+        .result-overlay.visible { pointer-events: all; opacity: 1; }
+        .overlay-bg {
+            position: absolute; inset: 0;
+            background: rgba(6,7,16,0.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+        }
+        .overlay-card {
+            position: relative; z-index: 1;
+            background: var(--surface); border: 1px solid rgba(108,99,255,0.35);
+            border-radius: 28px; padding: 40px 36px 32px;
+            width: 100%; max-width: 420px; text-align: center;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 32px 80px rgba(0,0,0,0.7), 0 0 60px rgba(108,99,255,0.15);
+            transform: scale(0.85) translateY(30px); opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.16,1,0.3,1), opacity 0.4s;
+        }
+        .result-overlay.visible .overlay-card { transform: scale(1) translateY(0); opacity: 1; }
+        .overlay-platform-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-family: 'Unbounded', sans-serif; font-size: 12px; font-weight: 600;
+            letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+            margin-bottom: 20px; padding: 5px 14px; border-radius: 20px;
+            background: var(--surface2); border: 1px solid var(--border);
+        }
+        .overlay-label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+        .overlay-amount {
+            font-family: 'Unbounded', sans-serif; font-size: 52px; font-weight: 700; line-height: 1;
+            background: linear-gradient(135deg, var(--accent3), #a8ff78);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;
+        }
+        .overlay-sub { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+        .overlay-breakdown { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 32px; min-height: 28px; }
+        .chip { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+        .chip-t1 { background: rgba(108,99,255,0.15); color: #a89eff; border: 1px solid rgba(108,99,255,0.2); }
+        .chip-t2 { background: rgba(255,165,0,0.12); color: #ffaa44; border: 1px solid rgba(255,165,0,0.25); }
+        .chip-t3 { background: rgba(67,233,123,0.1); color: #43e97b; border: 1px solid rgba(67,233,123,0.2); }
+        .chip-tp { background: rgba(255,215,0,0.12); color: #ffd700; border: 1px solid rgba(255,215,0,0.3); }
+        .overlay-next-btn {
+            width: 100%; padding: 16px;
+            background: linear-gradient(135deg, var(--accent) 0%, #9b59ff 100%);
+            color: #fff; border: none; border-radius: 14px; cursor: pointer;
+            font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.05em;
+            position: relative; overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s, opacity 0.4s cubic-bezier(0.16,1,0.3,1);
+            box-shadow: 0 4px 20px var(--glow); opacity: 0; transform: translateY(12px);
+        }
+        .overlay-next-btn::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%); pointer-events: none;
+        }
+        .overlay-next-btn.reveal { opacity: 1; transform: translateY(0); }
+        .overlay-next-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(108,99,255,0.6); }
+        .overlay-next-btn:active { transform: scale(0.98); }
 
-.add-video-btn{width:100%;padding:12px;background:transparent;
-  border:1px dashed rgba(108,99,255,.3);border-radius:12px;
-  color:rgba(108,99,255,.7);cursor:pointer;font-family:'Jost',sans-serif;
-  font-size:13px;transition:all .2s;margin-top:4px}
-.add-video-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(108,99,255,.06)}
+        /* TOTAL SCREEN */
+        .total-screen-card {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 40px 36px;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 40px 80px rgba(0,0,0,0.6); text-align: center;
+        }
+        .total-label { font-family: 'Unbounded', sans-serif; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+        .total-title { font-family: 'Unbounded', sans-serif; font-size: 20px; font-weight: 700; background: linear-gradient(135deg,#fff 30%,rgba(255,255,255,0.5)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 32px; }
+        .total-platforms { display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; }
+        .total-platform-row {
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px;
+            opacity: 0; transform: translateX(-16px); transition: opacity 0.4s, transform 0.4s;
+        }
+        .total-platform-row.show { opacity: 1; transform: translateX(0); }
+        .total-platform-row.delay1 { transition-delay: 0.1s; }
+        .total-platform-row.delay2 { transition-delay: 0.3s; }
+        .tpr-left { display: flex; align-items: center; gap: 10px; }
+        .tpr-icon { font-size: 22px; }
+        .tpr-name { font-family: 'Unbounded', sans-serif; font-size: 12px; font-weight: 600; }
+        .tpr-amount { font-family: 'Unbounded', sans-serif; font-size: 18px; font-weight: 700; }
+        .tpr-yt { color: #ff6666; }
+        .tpr-tt { color: #00f2ea; }
+        .total-divider { height: 1px; background: var(--border); margin: 4px 0 24px; }
+        .total-sum-label { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+        .total-sum-amount {
+            font-family: 'Unbounded', sans-serif; font-size: 48px; font-weight: 700;
+            background: linear-gradient(135deg,#ffd700,#ffaa00,#ff8c00);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1;
+            opacity: 0; transform: scale(0.7);
+            transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1);
+            transition-delay: 0.6s;
+        }
+        .total-sum-amount.show { opacity: 1; transform: scale(1); animation: goldPulse 2.5s ease-in-out 1.2s infinite; }
+        @keyframes goldPulse { 0%,100% { filter: drop-shadow(0 0 20px rgba(255,180,0,0.4)); } 50% { filter: drop-shadow(0 0 40px rgba(255,180,0,0.8)); } }
 
-/* ── SPIN WRAP ── */
-.spin-wrap{position:relative;display:flex;align-items:center}
-.spin-wrap input{padding-right:36px}
-.spin-btns{position:absolute;right:6px;top:50%;transform:translateY(-50%);
-  display:flex;flex-direction:column;gap:2px}
-.spin-btn{width:24px;height:18px;background:var(--surface2);
-  border:1px solid rgba(255,255,255,.1);border-radius:6px;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;color:var(--muted);font-size:10px;line-height:1;
-  transition:background .15s,color .15s,border-color .15s,transform .1s;
-  user-select:none;-webkit-user-select:none}
-.spin-btn:hover{background:rgba(108,99,255,.2);border-color:rgba(108,99,255,.4);color:#a89eff}
-.spin-btn:active{transform:scale(.88);background:rgba(108,99,255,.35)}
+        .confetti-star { position: absolute; font-size: 20px; pointer-events: none; animation: starFly 1.2s ease-out forwards; }
+        @keyframes starFly { 0% { opacity:1; transform:translate(0,0) rotate(0deg) scale(1); } 100% { opacity:0; transform:translate(var(--tx),var(--ty)) rotate(var(--r)) scale(0.3); } } to { opacity:1; transform:translateY(0) rotate(0deg) scale(1); } } 33% { transform:translateY(-8px) rotate(1.5deg); } 66% { transform:translateY(-4px) rotate(-1deg); } }
 
-/* ── SALARY SUMMARY ── */
-.salary-summary{margin-top:12px;background:rgba(67,233,123,.06);
-  border:1px solid rgba(67,233,123,.2);border-radius:14px;padding:16px 18px;display:none}
-.salary-summary.show{display:block;animation:fadeUp .4s cubic-bezier(.16,1,.3,1) both}
-.salary-summary-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.salary-summary-rows{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
-.salary-summary-row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
-.salary-summary-row span:last-child{color:var(--text);font-weight:500}
-.salary-summary-total{display:flex;justify-content:space-between;align-items:baseline;
-  border-top:1px solid rgba(67,233,123,.2);padding-top:10px;margin-top:6px}
-.salary-summary-total-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-.salary-summary-total-val{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:700;
-  background:linear-gradient(135deg,var(--accent3),#a8ff78);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        /* MOBILE */
+        @media (max-width: 600px) {
+            body { padding: 0; align-items: flex-end; }
+            .screen.active {
+                max-width: 100%;
+                position: fixed;
+                inset: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                overflow: hidden;
+            }
+            .card, .total-screen-card {
+                border-radius: 28px 28px 0 0;
+                padding: 20px 18px 36px;
+                border-bottom: none;
+                max-height: 90vh;
+                overflow-y: auto;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+                flex-shrink: 0;
+            }
+            .card::before, .total-screen-card::before { content: ''; display: block; width: 40px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.15); margin: 0 auto 20px; }
+            .overlay-card { padding: 32px 20px 28px; border-radius: 24px; }
+            .overlay-amount { font-size: 38px; }
+            .total-sum-amount { font-size: 36px; }
+            input, select { font-size: 16px; }
+            .tier-input { width: 70px !important; }
+        }
+        @media (max-width: 360px) {
+            .platform-btn { padding: 20px 10px 18px; }
+            .total-sum-amount { font-size: 28px; }
+        }
 
-/* ── RESULT OVERLAY ── */
-.result-overlay{position:fixed;inset:0;z-index:200;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:24px;pointer-events:none;opacity:0;transition:opacity .4s ease}
-.result-overlay.visible{pointer-events:all;opacity:1}
-.overlay-bg{position:absolute;inset:0;background:rgba(6,7,16,.88);backdrop-filter:blur(14px)}
-.overlay-card{position:relative;z-index:1;background:var(--surface);
-  border:1px solid rgba(108,99,255,.35);border-radius:28px;padding:40px 36px 32px;
-  width:100%;max-width:420px;text-align:center;
-  box-shadow:0 0 0 1px rgba(255,255,255,.06),0 32px 80px rgba(0,0,0,.7),0 0 60px rgba(108,99,255,.15);
-  transform:scale(.85) translateY(30px);opacity:0;
-  transition:transform .5s cubic-bezier(.16,1,.3,1),opacity .4s}
-.result-overlay.visible .overlay-card{transform:scale(1) translateY(0);opacity:1}
-.overlay-platform-badge{display:inline-flex;align-items:center;gap:8px;
-  font-family:'Unbounded',sans-serif;font-size:12px;font-weight:600;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
-  margin-bottom:20px;padding:5px 14px;border-radius:20px;
-  background:var(--surface2);border:1px solid var(--border)}
-.overlay-label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
-.overlay-amount{font-family:'Unbounded',sans-serif;font-size:52px;font-weight:700;line-height:1;
-  background:linear-gradient(135deg,var(--accent3),#a8ff78);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
-.overlay-sub{font-size:13px;color:var(--muted);margin-bottom:18px}
-.overlay-breakdown{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;min-height:28px}
-.chip{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:500}
-.chip-base{background:rgba(108,99,255,.15);color:#a89eff;border:1px solid rgba(108,99,255,.2)}
-.chip-bonus{background:rgba(255,165,0,.12);color:#ffaa44;border:1px solid rgba(255,165,0,.25)}
-.chip-premium{background:rgba(255,215,0,.12);color:#ffd700;border:1px solid rgba(255,215,0,.3)}
-.chip-missed{background:rgba(255,101,132,.1);color:#ff6584;border:1px solid rgba(255,101,132,.25)}
-.overlay-next-btn{width:100%;padding:16px;
-  background:linear-gradient(135deg,var(--accent) 0%,#9b59ff 100%);
-  color:#fff;border:none;border-radius:14px;cursor:pointer;
-  font-family:'Unbounded',sans-serif;font-size:13px;font-weight:600;letter-spacing:.05em;
-  position:relative;overflow:hidden;
-  transition:transform .4s cubic-bezier(.16,1,.3,1),box-shadow .2s,opacity .4s cubic-bezier(.16,1,.3,1);
-  box-shadow:0 4px 20px var(--glow);opacity:0;transform:translateY(12px)}
-.overlay-next-btn::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,.15) 0%,transparent 60%);pointer-events:none}
-.overlay-next-btn.reveal{opacity:1;transform:translateY(0)}
-.overlay-next-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(108,99,255,.6)}
+        /* Editable threshold */
+        .tier-threshold-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 3px;
+        }
+        .tier-threshold-prefix {
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .t1-color { color: #a89eff; }
+        .t2-color { color: #ffaa44; }
+        .t3-color { color: #43e97b; }
+        .tp-color  { background: linear-gradient(135deg,#ffd700,#ff8c00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-/* ── TOTAL SCREEN ── */
-.total-screen-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;
-  padding:40px 36px;box-shadow:0 0 0 1px rgba(255,255,255,.04),0 40px 80px rgba(0,0,0,.6);text-align:center}
-.total-label{font-family:'Unbounded',sans-serif;font-size:11px;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--muted);margin-bottom:14px}
-.total-title{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:700;
-  background:linear-gradient(135deg,#fff 30%,rgba(255,255,255,.5));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:32px}
-.total-platforms{display:flex;flex-direction:column;gap:14px;margin-bottom:28px}
-.total-platform-row{display:flex;align-items:center;justify-content:space-between;
-  background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px 20px;
-  opacity:0;transform:translateX(-16px);transition:opacity .4s,transform .4s}
-.total-platform-row.show{opacity:1;transform:translateX(0)}
-.total-platform-row.delay1{transition-delay:.1s}
-.total-platform-row.delay2{transition-delay:.3s}
-.tpr-left{display:flex;align-items:center;gap:10px}
-.tpr-icon{font-size:22px}
-.tpr-name{font-family:'Unbounded',sans-serif;font-size:12px;font-weight:600}
-.tpr-amount{font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700}
-.tpr-yt{color:#ff6666}
-.tpr-tt{color:#00f2ea}
-.total-divider{height:1px;background:var(--border);margin:4px 0 24px}
-.total-sum-label{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-.total-sum-amount{font-family:'Unbounded',sans-serif;font-size:48px;font-weight:700;
-  background:linear-gradient(135deg,#ffd700,#ffaa00,#ff8c00);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1;
-  opacity:0;transform:scale(.7);
-  transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1);
-  transition-delay:.6s}
-.total-sum-amount.show{opacity:1;transform:scale(1);animation:goldPulse 2.5s ease-in-out 1.2s infinite}
-@keyframes goldPulse{0%,100%{filter:drop-shadow(0 0 20px rgba(255,180,0,.4))}50%{filter:drop-shadow(0 0 40px rgba(255,180,0,.8))}}
-.confetti-star{position:absolute;font-size:20px;pointer-events:none;animation:starFly 1.2s ease-out forwards}
-@keyframes starFly{0%{opacity:1;transform:translate(0,0) rotate(0deg) scale(1)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) rotate(var(--r)) scale(.3)}}
+        .tier-threshold-input {
+            font-family: 'Unbounded', sans-serif !important;
+            font-size: 12px !important;
+            font-weight: 700 !important;
+            padding: 3px 8px !important;
+            border-radius: 8px !important;
+            border: 1px dashed rgba(255,255,255,0.15) !important;
+            background: transparent !important;
+            color: inherit !important;
+            width: 90px;
+            text-align: right;
+            transition: border-color 0.2s, background 0.2s !important;
+            box-shadow: none !important;
+        }
+        .tier-threshold-input:focus {
+            border-color: rgba(255,255,255,0.35) !important;
+            background: rgba(255,255,255,0.06) !important;
+            box-shadow: none !important;
+            outline: none;
+        }
+        .t1 .tier-threshold-input { color: #a89eff !important; }
+        .t2 .tier-threshold-input { color: #ffaa44 !important; }
+        .t3 .tier-threshold-input { color: #43e97b !important; }
+        .t-premium .tier-threshold-input { color: #ffd700 !important; }
+        .tier-threshold-suffix {
+            font-size: 11px;
+            color: var(--muted);
+            white-space: nowrap;
+        }
 
-/* ── MAINTENANCE SCREEN ── */
-.maint-screen{background:var(--surface);border:1px solid rgba(255,80,80,.25);
-  border-radius:24px;padding:60px 36px;text-align:center;
-  box-shadow:0 0 0 1px rgba(255,255,255,.04),0 40px 80px rgba(0,0,0,.6)}
-.maint-icon{font-size:64px;display:block;margin-bottom:20px;
-  animation:shake 2s ease-in-out infinite}
-@keyframes shake{0%,100%{transform:rotate(0)}10%{transform:rotate(-6deg)}20%{transform:rotate(6deg)}30%{transform:rotate(-4deg)}40%{transform:rotate(4deg)}50%{transform:rotate(0)}}
-.maint-title{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:700;
-  color:#ff6060;margin-bottom:12px}
-.maint-sub{font-size:14px;color:var(--muted);line-height:1.7;max-width:280px;margin:0 auto}
+        /* ── CUSTOM SPINNERS ── */
+        .spin-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .spin-wrap input[type=number] {
+            padding-right: 36px;
+        }
+        .spin-btns {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .spin-btn {
+            width: 24px;
+            height: 18px;
+            background: var(--surface2);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1;
+            transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .spin-btn:hover {
+            background: rgba(108,99,255,0.2);
+            border-color: rgba(108,99,255,0.4);
+            color: #a89eff;
+        }
+        .spin-btn:active {
+            transform: scale(0.88);
+            background: rgba(108,99,255,0.35);
+        }
 
-/* ── SETTINGS ── */
-.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px}
-.theme-swatch{border-radius:16px;padding:14px 10px 12px;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  border:2px solid transparent;transition:transform .18s,border-color .2s,box-shadow .2s;
-  position:relative;overflow:hidden}
-.theme-swatch::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 60%);pointer-events:none}
-.theme-swatch:hover{transform:translateY(-3px)}
-.theme-swatch:active{transform:scale(.96)}
-.theme-swatch.active{border-color:rgba(255,255,255,.5);box-shadow:0 0 20px rgba(255,255,255,.15)}
-.theme-swatch .ts-dots{display:flex;gap:4px}
-.theme-swatch .ts-dot{width:10px;height:10px;border-radius:50%}
-.theme-swatch .ts-name{font-family:'Unbounded',sans-serif;font-size:9px;font-weight:600;
-  letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.8)}
-.theme-swatch .ts-check{position:absolute;top:6px;right:8px;font-size:12px;opacity:0;transition:opacity .2s}
-.theme-swatch.active .ts-check{opacity:1}
-.sw-space{background:linear-gradient(135deg,#12151f,#1a1e2e)}
-.sw-sunset{background:linear-gradient(135deg,#1a1010,#251818)}
-.sw-ocean{background:linear-gradient(135deg,#081520,#0d2030)}
-.sw-forest{background:linear-gradient(135deg,#0c1a0f,#122518)}
-.sw-rose{background:linear-gradient(135deg,#1a0e16,#26141f)}
-.sw-gold{background:linear-gradient(135deg,#151100,#201a00)}
+        /* Threshold inputs get their own colored spinners */
+        .t1 .spin-btn:hover  { background: rgba(168,158,255,0.2); border-color: rgba(168,158,255,0.4); color: #a89eff; }
+        .t2 .spin-btn:hover  { background: rgba(255,170,68,0.2);  border-color: rgba(255,170,68,0.4);  color: #ffaa44; }
+        .t3 .spin-btn:hover  { background: rgba(67,233,123,0.2);  border-color: rgba(67,233,123,0.4);  color: #43e97b; }
+        .t-premium .spin-btn:hover { background: rgba(255,215,0,0.2); border-color: rgba(255,215,0,0.4); color: #ffd700; }
 
-/* ── THEMES ── */
-[data-theme="space"]{--bg:#0b0d17;--surface:#12151f;--surface2:#1a1e2e;--border:rgba(255,255,255,0.07);--accent:#6c63ff;--accent2:#ff6584;--accent3:#43e97b;--text:#e8eaf6;--muted:#6b7280;--glow:rgba(108,99,255,0.4);--orb1:rgba(108,99,255,0.18);--orb2:rgba(255,101,132,0.12);--orb3:rgba(67,233,123,0.08);--orb4:rgba(0,242,234,0.07)}
-[data-theme="sunset"]{--bg:#0f0a0a;--surface:#1a1010;--surface2:#251818;--border:rgba(255,150,50,0.1);--accent:#ff6b35;--accent2:#ff9500;--accent3:#ffcc02;--text:#fff0e0;--muted:#8a6a50;--glow:rgba(255,107,53,0.4);--orb1:rgba(255,107,53,0.18);--orb2:rgba(255,149,0,0.12);--orb3:rgba(255,204,2,0.08);--orb4:rgba(255,60,120,0.08)}
-[data-theme="ocean"]{--bg:#040d14;--surface:#081520;--surface2:#0d2030;--border:rgba(0,200,255,0.08);--accent:#00b4d8;--accent2:#0077b6;--accent3:#90e0ef;--text:#caf0f8;--muted:#4a7f90;--glow:rgba(0,180,216,0.4);--orb1:rgba(0,180,216,0.18);--orb2:rgba(0,119,182,0.12);--orb3:rgba(144,224,239,0.08);--orb4:rgba(0,255,200,0.07)}
-[data-theme="forest"]{--bg:#060f08;--surface:#0c1a0f;--surface2:#122518;--border:rgba(50,200,80,0.08);--accent:#2ecc71;--accent2:#27ae60;--accent3:#a8e6cf;--text:#d5f5e3;--muted:#4a7a55;--glow:rgba(46,204,113,0.4);--orb1:rgba(46,204,113,0.18);--orb2:rgba(39,174,96,0.12);--orb3:rgba(168,230,207,0.08);--orb4:rgba(255,230,100,0.07)}
-[data-theme="rose"]{--bg:#0f080d;--surface:#1a0e16;--surface2:#26141f;--border:rgba(255,100,180,0.08);--accent:#e91e8c;--accent2:#ff6eb4;--accent3:#ffd6ec;--text:#ffe0f0;--muted:#7a4060;--glow:rgba(233,30,140,0.4);--orb1:rgba(233,30,140,0.18);--orb2:rgba(255,110,180,0.12);--orb3:rgba(255,214,236,0.08);--orb4:rgba(150,50,255,0.08)}
-[data-theme="gold"]{--bg:#0a0800;--surface:#151100;--surface2:#201a00;--border:rgba(255,200,0,0.1);--accent:#f4c400;--accent2:#ff8c00;--accent3:#fff0a0;--text:#fff8dc;--muted:#806800;--glow:rgba(244,196,0,0.4);--orb1:rgba(244,196,0,0.18);--orb2:rgba(255,140,0,0.12);--orb3:rgba(255,240,160,0.08);--orb4:rgba(255,80,80,0.07)}
-.bg-orb-1{background:radial-gradient(circle,var(--orb1) 0%,transparent 70%) !important}
-.bg-orb-2{background:radial-gradient(circle,var(--orb2) 0%,transparent 70%) !important}
-.bg-orb-3{background:radial-gradient(circle,var(--orb3) 0%,transparent 70%) !important}
-.bg-orb-4{background:radial-gradient(circle,var(--orb4) 0%,transparent 70%) !important}
+        /* Tier input spinner — bigger, right side */
+        .tier-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .tier-input-wrap input {
+            padding-right: 36px !important;
+        }
+        .tier-input-wrap .spin-btns {
+            right: 5px;
+        }
 
-/* ── HISTORY ── */
-.history-empty{text-align:center;padding:40px 20px;color:var(--muted)}
-.hist-group{margin-bottom:20px}
-.hist-group-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.hist-group-month{font-family:'Unbounded',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-.hist-group-total{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;background:linear-gradient(135deg,#ffd700,#ffaa00);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hist-entry{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:13px 14px;margin-bottom:8px;position:relative;overflow:hidden;animation:fadeUp .35s cubic-bezier(.16,1,.3,1) both}
-.hist-entry::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
-.hist-entry.h-yt::before{background:#ff4444}
-.hist-entry.h-tt::before{background:#00f2ea}
-.hist-entry.h-combined::before{background:linear-gradient(180deg,#ffd700,#ff8c00)}
-.hist-left{display:flex;align-items:center;gap:10px}
-.hist-icon{font-size:18px}
-.hist-platform{font-family:'Unbounded',sans-serif;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
-.hist-meta{font-size:11px;color:var(--muted);margin-top:2px}
-.hist-right{display:flex;align-items:center;gap:8px}
-.hist-amount{font-family:'Unbounded',sans-serif;font-size:15px;font-weight:700}
-.hist-amount.h-yt{color:#ff6666}
-.hist-amount.h-tt{color:#00f2ea}
-.hist-amount.h-combined{background:linear-gradient(135deg,#ffd700,#ffaa00);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hist-del{background:none;border:none;cursor:pointer;color:rgba(255,101,132,.35);font-size:13px;padding:4px 6px;border-radius:6px;width:auto;margin:0;transition:color .2s,background .2s}
-.hist-del:hover{color:#ff6584;background:rgba(255,101,132,.1)}
-.hist-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
-.hist-stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:12px 10px;text-align:center}
-.hist-stat-val{font-family:'Unbounded',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
-.hist-stat-label{font-size:10px;color:var(--muted);margin-top:4px}
+        /* Price edit spinner — compact */
+        .price-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .price-wrap input {
+            padding-right: 32px !important;
+        }
+        .price-wrap .spin-btns {
+            right: 4px;
+        }
+        .price-wrap .spin-btn {
+            width: 20px;
+            height: 14px;
+            border-radius: 4px;
+            font-size: 9px;
+        }
 
-/* ── MOBILE ── */
-@media(max-width:600px){
-  body{padding:0;align-items:flex-end}
-  .screen.active{max-width:100%;position:fixed;inset:0;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
-  .card,.total-screen-card,.maint-screen{border-radius:28px 28px 0 0;padding:20px 18px 36px;border-bottom:none;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;flex-shrink:0}
-  .card::before,.total-screen-card::before,.maint-screen::before{content:'';display:block;width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.15);margin:0 auto 20px}
-  .overlay-card{padding:32px 20px 28px;border-radius:24px}
-  .overlay-amount{font-size:38px}
-  .total-sum-amount{font-size:36px}
-  input,select{font-size:16px}
-}
-@media(max-width:400px){
-  .theme-grid{grid-template-columns:repeat(2,1fr)}
-  .total-sum-amount{font-size:28px}
-}
+        /* Threshold spinner — inline, compact */
+        .threshold-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .threshold-wrap .spin-btns {
+            right: 3px;
+        }
+        .threshold-wrap .spin-btn {
+            width: 18px;
+            height: 13px;
+            border-radius: 4px;
+            font-size: 8px;
+            background: rgba(255,255,255,0.04);
+            border-color: rgba(255,255,255,0.08);
+        }
+        .tier-threshold-input {
+            padding-right: 28px !important;
+        }
 
-/* ── TYPEWRITER ── */
-.typing::after{content:'|';display:inline-block;color:var(--accent);font-weight:300;animation:blink .7s step-end infinite;margin-left:1px}
-.typed::after{display:none}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-</style>
+        
+
+        /* ── ANIMATED BACKGROUND ── */
+
+        /* Floating orbs canvas layer */
+        #bg-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Animated gradient orbs */
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            animation: orbPulse var(--dur, 8s) ease-in-out var(--delay, 0s) infinite;
+        }
+        .bg-orb-1 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(108,99,255,0.18) 0%, transparent 70%);
+            top: -100px; left: -100px;
+            --dur: 10s; --delay: 0s;
+            animation: orbDrift1 12s ease-in-out infinite;
+        }
+        .bg-orb-2 {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(255,101,132,0.12) 0%, transparent 70%);
+            bottom: -80px; right: -80px;
+            --dur: 9s; --delay: 2s;
+            animation: orbDrift2 14s ease-in-out 1s infinite;
+        }
+        .bg-orb-3 {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(67,233,123,0.08) 0%, transparent 70%);
+            top: 40%; left: 30%;
+            --dur: 11s; --delay: 4s;
+            animation: orbDrift3 16s ease-in-out 3s infinite;
+        }
+        .bg-orb-4 {
+            width: 250px; height: 250px;
+            background: radial-gradient(circle, rgba(0,242,234,0.07) 0%, transparent 70%);
+            top: 20%; right: 20%;
+            animation: orbDrift4 13s ease-in-out 5s infinite;
+        }
+
+        @keyframes orbDrift1 {
+            0%   { opacity: 0.6; transform: translate(0px, 0px) scale(1); }
+            25%  { opacity: 0.9; transform: translate(60px, 40px) scale(1.1); }
+            50%  { opacity: 0.5; transform: translate(30px, 80px) scale(0.95); }
+            75%  { opacity: 0.8; transform: translate(-30px, 30px) scale(1.05); }
+            100% { opacity: 0.6; transform: translate(0px, 0px) scale(1); }
+        }
+        @keyframes orbDrift2 {
+            0%   { opacity: 0.5; transform: translate(0px, 0px) scale(1); }
+            30%  { opacity: 0.8; transform: translate(-50px, -30px) scale(1.08); }
+            60%  { opacity: 0.4; transform: translate(-20px, -60px) scale(0.92); }
+            100% { opacity: 0.5; transform: translate(0px, 0px) scale(1); }
+        }
+        @keyframes orbDrift3 {
+            0%   { opacity: 0.3; transform: translate(0px, 0px) scale(1); }
+            40%  { opacity: 0.6; transform: translate(40px, -50px) scale(1.15); }
+            70%  { opacity: 0.2; transform: translate(-40px, 20px) scale(0.88); }
+            100% { opacity: 0.3; transform: translate(0px, 0px) scale(1); }
+        }
+        @keyframes orbDrift4 {
+            0%   { opacity: 0.4; transform: translate(0px, 0px) scale(1); }
+            35%  { opacity: 0.7; transform: translate(-30px, 50px) scale(1.12); }
+            65%  { opacity: 0.2; transform: translate(50px, 20px) scale(0.9); }
+            100% { opacity: 0.4; transform: translate(0px, 0px) scale(1); }
+        }
+
+        /* Animated grid — subtle shimmer */
+        body::after {
+            animation: gridShimmer 6s ease-in-out infinite !important;
+        }
+        body.no-grid-anim::after { animation: none !important; }
+        @keyframes gridShimmer {
+            0%,100% { opacity: 0.6; }
+            50%      { opacity: 1; }
+        }
+
+        /* Shooting stars */
+        .star-field {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .shooting-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0;
+            animation: shoot var(--sdur, 3s) linear var(--sdelay, 0s) infinite;
+        }
+        @keyframes shoot {
+            0%   { opacity: 0; transform: translate(0,0) scale(1); }
+            5%   { opacity: 1; }
+            100% { opacity: 0; transform: translate(var(--sx, -300px), var(--sy, 200px)) scale(0.2); }
+        }
+
+        @media (max-width: 600px) {
+            .bg-orb-1 { width: 300px; height: 300px; }
+            .bg-orb-2 { width: 250px; height: 250px; }
+            .bg-orb-3 { width: 180px; height: 180px; }
+            .bg-orb-4 { width: 150px; height: 150px; }
+        }
+
+        /* ══════════ THEMES ══════════ */
+        [data-theme="space"] {
+            --bg: #0b0d17; --surface: #12151f; --surface2: #1a1e2e;
+            --border: rgba(255,255,255,0.07);
+            --accent: #6c63ff; --accent2: #ff6584; --accent3: #43e97b;
+            --text: #e8eaf6; --muted: #6b7280; --glow: rgba(108,99,255,0.4);
+            --orb1: rgba(108,99,255,0.18); --orb2: rgba(255,101,132,0.12);
+            --orb3: rgba(67,233,123,0.08); --orb4: rgba(0,242,234,0.07);
+        }
+        [data-theme="sunset"] {
+            --bg: #0f0a0a; --surface: #1a1010; --surface2: #251818;
+            --border: rgba(255,150,50,0.1);
+            --accent: #ff6b35; --accent2: #ff9500; --accent3: #ffcc02;
+            --text: #fff0e0; --muted: #8a6a50; --glow: rgba(255,107,53,0.4);
+            --orb1: rgba(255,107,53,0.18); --orb2: rgba(255,149,0,0.12);
+            --orb3: rgba(255,204,2,0.08); --orb4: rgba(255,60,120,0.08);
+        }
+        [data-theme="ocean"] {
+            --bg: #040d14; --surface: #081520; --surface2: #0d2030;
+            --border: rgba(0,200,255,0.08);
+            --accent: #00b4d8; --accent2: #0077b6; --accent3: #90e0ef;
+            --text: #caf0f8; --muted: #4a7f90; --glow: rgba(0,180,216,0.4);
+            --orb1: rgba(0,180,216,0.18); --orb2: rgba(0,119,182,0.12);
+            --orb3: rgba(144,224,239,0.08); --orb4: rgba(0,255,200,0.07);
+        }
+        [data-theme="forest"] {
+            --bg: #060f08; --surface: #0c1a0f; --surface2: #122518;
+            --border: rgba(50,200,80,0.08);
+            --accent: #2ecc71; --accent2: #27ae60; --accent3: #a8e6cf;
+            --text: #d5f5e3; --muted: #4a7a55; --glow: rgba(46,204,113,0.4);
+            --orb1: rgba(46,204,113,0.18); --orb2: rgba(39,174,96,0.12);
+            --orb3: rgba(168,230,207,0.08); --orb4: rgba(255,230,100,0.07);
+        }
+        [data-theme="rose"] {
+            --bg: #0f080d; --surface: #1a0e16; --surface2: #26141f;
+            --border: rgba(255,100,180,0.08);
+            --accent: #e91e8c; --accent2: #ff6eb4; --accent3: #ffd6ec;
+            --text: #ffe0f0; --muted: #7a4060; --glow: rgba(233,30,140,0.4);
+            --orb1: rgba(233,30,140,0.18); --orb2: rgba(255,110,180,0.12);
+            --orb3: rgba(255,214,236,0.08); --orb4: rgba(150,50,255,0.08);
+        }
+        [data-theme="gold"] {
+            --bg: #0a0800; --surface: #151100; --surface2: #201a00;
+            --border: rgba(255,200,0,0.1);
+            --accent: #f4c400; --accent2: #ff8c00; --accent3: #fff0a0;
+            --text: #fff8dc; --muted: #806800; --glow: rgba(244,196,0,0.4);
+            --orb1: rgba(244,196,0,0.18); --orb2: rgba(255,140,0,0.12);
+            --orb3: rgba(255,240,160,0.08); --orb4: rgba(255,80,80,0.07);
+        }
+
+        /* Орбы используют переменные темы */
+        .bg-orb-1 { background: radial-gradient(circle, var(--orb1, rgba(108,99,255,0.18)) 0%, transparent 70%) !important; }
+        .bg-orb-2 { background: radial-gradient(circle, var(--orb2, rgba(255,101,132,0.12)) 0%, transparent 70%) !important; }
+        .bg-orb-3 { background: radial-gradient(circle, var(--orb3, rgba(67,233,123,0.08)) 0%, transparent 70%) !important; }
+        .bg-orb-4 { background: radial-gradient(circle, var(--orb4, rgba(0,242,234,0.07)) 0%, transparent 70%) !important; }
+
+        /* ── THEME SCREEN ── */
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 4px;
+        }
+        .theme-swatch {
+            border-radius: 16px;
+            padding: 14px 10px 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid transparent;
+            transition: transform 0.18s, border-color 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .theme-swatch::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .theme-swatch:hover { transform: translateY(-3px); }
+        .theme-swatch:active { transform: scale(0.96); }
+        .theme-swatch.active { border-color: rgba(255,255,255,0.5); box-shadow: 0 0 20px rgba(255,255,255,0.15); }
+        .theme-swatch .ts-dots {
+            display: flex; gap: 4px;
+        }
+        .theme-swatch .ts-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+        }
+        .theme-swatch .ts-name {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 9px; font-weight: 600;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: rgba(255,255,255,0.8);
+        }
+        .theme-swatch .ts-check {
+            position: absolute; top: 6px; right: 8px;
+            font-size: 12px; opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .theme-swatch.active .ts-check { opacity: 1; }
+
+        /* Swatch colours */
+        .sw-space  { background: linear-gradient(135deg, #12151f, #1a1e2e); }
+        .sw-sunset { background: linear-gradient(135deg, #1a1010, #251818); }
+        .sw-ocean  { background: linear-gradient(135deg, #081520, #0d2030); }
+        .sw-forest { background: linear-gradient(135deg, #0c1a0f, #122518); }
+        .sw-rose   { background: linear-gradient(135deg, #1a0e16, #26141f); }
+        .sw-gold   { background: linear-gradient(135deg, #151100, #201a00); }
+
+        @media (max-width: 400px) {
+            .theme-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* ── ANIMATION SETTINGS ── */
+        .anim-settings { display: flex; flex-direction: column; gap: 14px; margin-top: 4px; }
+
+        .anim-row {
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 14px; padding: 14px 16px;
+            transition: border-color 0.2s;
+        }
+        .anim-row:hover { border-color: rgba(255,255,255,0.12); }
+
+        .anim-row-left { display: flex; align-items: center; gap: 12px; }
+        .anim-row-icon { font-size: 20px; width: 28px; text-align: center; }
+        .anim-row-info {}
+        .anim-row-label {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 11px; font-weight: 600;
+            letter-spacing: 0.06em; color: var(--text);
+        }
+        .anim-row-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+        /* Toggle switch */
+        .toggle {
+            position: relative; width: 44px; height: 24px; flex-shrink: 0;
+        }
+        .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .toggle-track {
+            position: absolute; inset: 0; background: var(--surface);
+            border: 1px solid var(--border); border-radius: 24px; cursor: pointer;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .toggle-track::after {
+            content: ''; position: absolute;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: var(--muted); top: 2px; left: 2px;
+            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), background 0.3s;
+        }
+        .toggle input:checked + .toggle-track {
+            background: var(--accent); border-color: var(--accent);
+        }
+        .toggle input:checked + .toggle-track::after {
+            transform: translateX(20px); background: #fff;
+        }
+
+        /* Speed/Intensity slider row */
+        .anim-slider-row {
+            display: flex; flex-direction: column; gap: 10px;
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 14px; padding: 14px 16px;
+            transition: border-color 0.2s, opacity 0.3s;
+        }
+        .anim-slider-row.disabled { opacity: 0.35; pointer-events: none; }
+        .anim-slider-header {
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .anim-slider-label {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--text);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .anim-slider-val {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 12px; font-weight: 700; color: var(--accent);
+            min-width: 32px; text-align: right;
+        }
+        .anim-slider {
+            -webkit-appearance: none; appearance: none;
+            width: 100%; height: 4px;
+            background: var(--border); border-radius: 4px; outline: none;
+            cursor: pointer;
+            background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--pct, 50%), var(--surface) var(--pct, 50%));
+        }
+        .anim-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 18px; height: 18px;
+            border-radius: 50%; background: var(--accent);
+            border: 2px solid var(--bg); cursor: pointer;
+            box-shadow: 0 2px 8px var(--glow);
+            transition: transform 0.15s;
+        }
+        .anim-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        .anim-slider::-moz-range-thumb {
+            width: 18px; height: 18px; border-radius: 50%;
+            background: var(--accent); border: 2px solid var(--bg);
+            cursor: pointer; box-shadow: 0 2px 8px var(--glow);
+        }
+
+        /* ── STATS SCREEN ── */
+        .stats-platform-section { margin-bottom: 28px; }
+        .stats-platform-header {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 14px;
+        }
+        .stats-platform-icon { font-size: 22px; }
+        .stats-platform-name {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 13px; font-weight: 700;
+        }
+        .stats-platform-total {
+            margin-left: auto;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 14px; font-weight: 700;
+            color: var(--accent3);
+        }
+
+        /* Big number cards row */
+        .stats-nums {
+            display: grid; grid-template-columns: repeat(3,1fr);
+            gap: 8px; margin-bottom: 14px;
+        }
+        .stats-num-card {
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 14px; padding: 12px 10px; text-align: center;
+        }
+        .stats-num-val {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 16px; font-weight: 700;
+            color: var(--text); line-height: 1.1;
+        }
+        .stats-num-label { font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+        /* Missed badge */
+        .missed-badge {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,101,132,0.08); border: 1px solid rgba(255,101,132,0.2);
+            border-radius: 12px; padding: 10px 14px; margin-bottom: 14px;
+        }
+        .missed-badge.none {
+            background: rgba(67,233,123,0.08); border-color: rgba(67,233,123,0.2);
+        }
+        .missed-badge-icon { font-size: 18px; }
+        .missed-badge-text { font-size: 12px; color: var(--text); }
+        .missed-badge-text span { font-weight: 700; color: var(--accent2); }
+        .missed-badge.none .missed-badge-text span { color: var(--accent3); }
+
+        /* Tier bar chart */
+        .tier-bars { display: flex; flex-direction: column; gap: 8px; }
+        .tier-bar-row { display: flex; flex-direction: column; gap: 4px; }
+        .tier-bar-header {
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .tier-bar-label { font-size: 11px; color: var(--muted); }
+        .tier-bar-info { font-size: 11px; font-weight: 600; color: var(--text); }
+        .tier-bar-track {
+            height: 8px; background: var(--surface);
+            border-radius: 8px; overflow: hidden; border: 1px solid var(--border);
+        }
+        .tier-bar-fill {
+            height: 100%; border-radius: 8px;
+            transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+            width: 0%;
+        }
+        .tier-bar-fill.t1 { background: linear-gradient(90deg, #6c63ff, #a89eff); }
+        .tier-bar-fill.t2 { background: linear-gradient(90deg, #ff9500, #ffcc02); }
+        .tier-bar-fill.t3 { background: linear-gradient(90deg, #2ecc71, #a8e6cf); }
+        .tier-bar-fill.tp { background: linear-gradient(90deg, #ffd700, #ff8c00); }
+        .tier-bar-fill.missed { background: linear-gradient(90deg, #ff6584, rgba(255,101,132,0.4)); }
+
+        /* Percent ring */
+        .stats-ring-row {
+            display: flex; align-items: center; gap: 16px;
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 14px; padding: 14px;
+            margin-bottom: 14px;
+        }
+        .ring-svg { flex-shrink: 0; }
+        .ring-info { flex: 1; }
+        .ring-pct {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 24px; font-weight: 700;
+            color: var(--accent);
+        }
+        .ring-desc { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+        .stats-section-divider {
+            height: 1px; background: var(--border); margin: 24px 0;
+        }
+
+        @media (max-width: 400px) {
+            .stats-nums { grid-template-columns: repeat(2,1fr); }
+            .stats-num-val { font-size: 13px; }
+        }
+
+        /* ── HISTORY ── */
+        .history-empty { text-align:center; padding:40px 20px; color:var(--muted); }
+        .hist-group { margin-bottom:20px; }
+        .hist-group-header {
+            display:flex; align-items:center; justify-content:space-between;
+            margin-bottom:10px;
+        }
+        .hist-group-month {
+            font-family:'Unbounded',sans-serif; font-size:11px; font-weight:600;
+            letter-spacing:0.12em; text-transform:uppercase; color:var(--muted);
+        }
+        .hist-group-total {
+            font-family:'Unbounded',sans-serif; font-size:14px; font-weight:700;
+            background:linear-gradient(135deg,#ffd700,#ffaa00);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+        }
+        .hist-entry {
+            display:flex; align-items:center; justify-content:space-between;
+            background:var(--surface2); border:1px solid var(--border);
+            border-radius:14px; padding:13px 14px; margin-bottom:8px;
+            position:relative; overflow:hidden;
+            animation:fadeUp 0.35s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        .hist-entry::before {
+            content:''; position:absolute; left:0; top:0; bottom:0;
+            width:3px; border-radius:3px 0 0 3px;
+        }
+        .hist-entry.h-yt::before { background:#ff4444; }
+        .hist-entry.h-tt::before { background:#00f2ea; }
+        .hist-entry.h-combined::before { background:linear-gradient(180deg,#ffd700,#ff8c00); }
+        .hist-left { display:flex; align-items:center; gap:10px; }
+        .hist-icon { font-size:18px; }
+        .hist-platform { font-family:'Unbounded',sans-serif; font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.07em; }
+        .hist-meta { font-size:11px; color:var(--muted); margin-top:2px; }
+        .hist-right { display:flex; align-items:center; gap:8px; }
+        .hist-amount { font-family:'Unbounded',sans-serif; font-size:15px; font-weight:700; }
+        .hist-amount.h-yt { color:#ff6666; }
+        .hist-amount.h-tt { color:#00f2ea; }
+        .hist-amount.h-combined { background:linear-gradient(135deg,#ffd700,#ffaa00); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .hist-del {
+            background:none; border:none; cursor:pointer; color:rgba(255,101,132,0.35);
+            font-size:13px; padding:4px 6px; border-radius:6px; width:auto; margin:0;
+            transition:color 0.2s,background 0.2s;
+        }
+        .hist-del:hover { color:#ff6584; background:rgba(255,101,132,0.1); }
+        .hist-stats-row {
+            display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:20px;
+        }
+        .hist-stat-card {
+            background:var(--surface2); border:1px solid var(--border);
+            border-radius:14px; padding:12px 10px; text-align:center;
+        }
+        .hist-stat-val { font-family:'Unbounded',sans-serif; font-size:15px; font-weight:700; color:var(--text); }
+        .hist-stat-label { font-size:10px; color:var(--muted); margin-top:4px; }
+
+        /* ── PREMIUM CHECKBOX ── */
+        .premium-check-row {
+            display: flex; align-items: center; gap: 10px;
+            margin-top: 10px; padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+        .premium-check-label {
+            font-size: 11px; color: var(--muted); flex: 1; line-height: 1.3;
+        }
+        .premium-check-label span { color: var(--text); font-weight: 600; }
+        .prem-toggle {
+            position: relative; width: 44px; height: 24px; flex-shrink: 0;
+        }
+        .prem-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .prem-toggle-track {
+            position: absolute; inset: 0; background: var(--surface);
+            border: 1px solid var(--border); border-radius: 24px; cursor: pointer;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .prem-toggle-track::after {
+            content: ''; position: absolute;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: var(--muted); top: 2px; left: 2px;
+            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), background 0.3s;
+        }
+        .prem-toggle input:checked + .prem-toggle-track {
+            background: #ffd700; border-color: #ffd700;
+        }
+        .prem-toggle input:checked + .prem-toggle-track::after {
+            transform: translateX(20px); background: #fff;
+        }
+        .tier-card.t-premium .premium-check-row { border-top-color: rgba(255,215,0,0.2); }
+    </style>
 </head>
 <body>
 
-<!-- ── ANIMATED BG ── -->
-<div class="bg-orb bg-orb-1"></div>
-<div class="bg-orb bg-orb-2"></div>
-<div class="bg-orb bg-orb-3"></div>
-<div class="bg-orb bg-orb-4"></div>
-<div class="star-field" id="star-field"></div>
+    <!-- Animated Background -->
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+    <div class="bg-orb bg-orb-4"></div>
+    <div class="star-field" id="star-field"></div>
 
-<!-- ═══════════ HOME ═══════════ -->
-<div class="screen active" id="screen-home">
-  <div class="card">
-    <div class="home-header">
-      <div class="settings-btn" onclick="goTo('settings')">⚙️</div>
-      <div class="home-icon">💰</div>
-      <div class="home-title">Калькулятор зарплаты</div>
-      <div class="home-sub">Выбери платформу для расчёта</div>
-    </div>
-    <!-- Мейнт. баннер (виден всем когда включён) -->
-    <div class="maint-badge" id="maint-badge-home">🔧 Ведутся технические работы</div>
-    <div class="platform-grid">
-      <button class="platform-btn btn-yt" onclick="tryGo('yt')">
-        <span class="p-icon">▶️</span>
-        <span class="p-label">YouTube</span>
-        <span class="p-status" id="yt-status">Не подсчитан</span>
-      </button>
-      <button class="platform-btn btn-tt" onclick="tryGo('tt')">
-        <span class="p-icon">🎵</span>
-        <span class="p-label">TikTok</span>
-        <span class="p-status" id="tt-status">Не подсчитан</span>
-      </button>
-    </div>
-    <div class="total-btn-wrap">
-      <button class="btn-primary" id="btn-see-total" onclick="showTotal()" style="display:none">💎 Посмотреть полную сумму</button>
-      <button class="btn-ghost" onclick="goTo('history')" style="margin-top:10px">📋 История</button>
-    </div>
-    <!-- Панель администратора -->
-    <div class="admin-panel" id="admin-panel">
-      <div class="admin-panel-header">🔑 Администратор</div>
-      <div class="maint-toggle-row">
-        <div class="maint-toggle-label">
-          Технические работы
-          <small id="maint-status-text">Выключены — бот работает</small>
+    <!-- HOME -->
+    <div class="screen active" id="screen-home">
+        <div class="card">
+            <div class="home-header" style="position:relative">
+                <div onclick="goTo('settings')" style="position:absolute;top:0;right:0;width:36px;height:36px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:background 0.2s;" onmouseover="this.style.background='rgba(108,99,255,0.15)'" onmouseout="this.style.background='var(--surface2)'">⚙️</div>
+                <div class="home-icon">💰</div>
+                <div class="home-title">Калькулятор зарплаты</div>
+                <div class="home-sub">Выбери платформу для расчёта</div>
+            </div>
+            <div class="platform-grid">
+                <button class="platform-btn btn-yt" onclick="goTo('yt')">
+                    <span class="p-icon">▶️</span>
+                    <span class="p-label">YouTube</span>
+                    <span class="p-status" id="yt-status">Не подсчитан</span>
+                </button>
+                <button class="platform-btn btn-tt" onclick="goTo('tt')">
+                    <span class="p-icon">🎵</span>
+                    <span class="p-label">TikTok</span>
+                    <span class="p-status" id="tt-status">Не подсчитан</span>
+                </button>
+            </div>
+            <div class="total-btn-wrap">
+                <button class="btn-primary" id="btn-see-total" onclick="showTotal()" style="display:none">
+                    💎 Посмотреть полную сумму
+                </button>
+                <button class="btn-ghost" id="btn-stats" onclick="goTo('stats')" style="display:none;margin-top:10px">
+                    📊 Статистика
+                </button>
+                <button class="btn-ghost" onclick="goTo('history')" style="margin-top:8px">
+                    📋 История
+                </button>
+            </div>
         </div>
-        <label class="toggle">
-          <input type="checkbox" id="maint-toggle" onchange="toggleMaintenance()">
-          <span class="toggle-track"></span>
-        </label>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════ MAINTENANCE ═══════════ -->
-<div class="screen" id="screen-maint">
-  <div class="maint-screen">
-    <span class="maint-icon">🔧</span>
-    <div class="maint-title">Технические работы</div>
-    <div class="maint-sub">В данный момент ведутся технические работы.<br>Бот временно недоступен.<br><br>Попробуй позже!</div>
-    <button class="btn-ghost" style="margin-top:28px;max-width:280px;margin-left:auto;margin-right:auto" onclick="goTo('home')">← На главную</button>
-  </div>
-</div>
-
-<!-- ═══════════ YOUTUBE ═══════════ -->
-<div class="screen" id="screen-yt">
-  <div class="card">
-    <div class="calc-header">
-      <div class="back-btn" onclick="goTo('home')">←</div>
-      <div class="calc-header-info">
-        <div class="calc-platform-badge">▶️ YouTube Shorts</div>
-        <div class="calc-sub">Оплата по просмотрам ролика</div>
-      </div>
-    </div>
-    <div class="field">
-      <label>Месяц</label>
-      <select id="yt-month"></select>
     </div>
 
-    <div class="section-title">Видео</div>
-    <div class="videos-list" id="yt-videos-list"></div>
-    <button class="add-video-btn" onclick="addVideo('yt')">+ Добавить видео</button>
+    <!-- YOUTUBE -->
+    <div class="screen" id="screen-yt">
+        <div class="card">
+            <div class="calc-header">
+                <div class="back-btn" onclick="goTo('home')">←</div>
+                <div class="calc-header-info">
+                    <div class="calc-platform-badge">▶️ YouTube</div>
+                    <div class="calc-sub">Оплата по просмотрам ролика</div>
+                </div>
+            </div>
+            <div class="field">
+                <label>Месяц</label>
+                <select id="yt-month">
+                    <option>Январь</option><option>Февраль</option><option>Март</option>
+                    <option>Апрель</option><option>Май</option><option>Июнь</option>
+                    <option>Июль</option><option>Август</option><option>Сентябрь</option>
+                    <option>Октябрь</option><option>Ноябрь</option><option>Декабрь</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Всего видео за месяц</label>
+                <div class="spin-wrap">
+                    <input type="number" id="yt-total-videos" min="0" placeholder="0" style="padding-right:36px">
+                    <div class="spin-btns">
+                        <div class="spin-btn" onclick="spinInput('yt-total-videos',1)">▲</div>
+                        <div class="spin-btn" onclick="spinInput('yt-total-videos',-1)">▼</div>
+                    </div>
+                </div>
+            </div>
 
-    <div class="salary-summary" id="yt-summary">
-      <div class="salary-summary-label">Разбивка</div>
-      <div class="salary-summary-rows" id="yt-summary-rows"></div>
-      <div class="salary-summary-total">
-        <div class="salary-summary-total-label">Итого</div>
-        <div class="salary-summary-total-val" id="yt-summary-total">0 ₽</div>
-      </div>
+            <div class="section-title">Видео по просмотрам</div>
+            <div class="tiers">
+                <!-- Tier 1 -->
+                <div class="tier-card t1">
+                    <div class="tier-left">
+                        <div class="tier-threshold-wrap"><span class="tier-threshold-prefix t1-color">от</span><div class="threshold-wrap">
+                <input type="number" class="tier-threshold-input" id="yt-t1-threshold" value="5000" min="0">
+                <div class="spin-btns">
+                    <div class="spin-btn" onclick="spinInput('yt-t1-threshold',1000)">▲</div>
+                    <div class="spin-btn" onclick="spinInput('yt-t1-threshold',-1000)">▼</div>
+                </div>
+            </div><span class="tier-threshold-suffix">просм.</span></div>
+                        <div class="tier-price">Цена: <span id="yt-t1-price-show">500 ₽</span> / видео</div>
+                    </div>
+                    <div class="tier-right">
+                        <div class="tier-count-label">Кол-во видео</div>
+                        <div class="tier-input-wrap">
+                        <input type="number" class="tier-input" id="yt-t1-count" min="0" placeholder="0">
+                        <div class="spin-btns">
+                            <div class="spin-btn" onclick="spinInput('yt-t1-count',1)">▲</div>
+                            <div class="spin-btn" onclick="spinInput('yt-t1-count',-1)">▼</div>
+                        </div>
+                    </div>
+                        <div class="price-wrap">
+                        <input type="number" class="tier-price-edit" id="yt-t1-price" value="500" min="0" title="Цена за видео">
+                        <div class="spin-btns">
+                            <div class="spin-btn" onclick="spinInput('yt-t1-price',50)">▲</div>
+                            <div class="spin-btn" onclick="spinInput('yt-t1-price',-50)">▼</div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <!-- Tier 2 -->
+                <div class="tier-card t2">
+                    <div class="tier-left">
+                        <div class="tier-threshold-wrap"><span class="tier-threshold-prefix t2-color">от</span><div class="threshold-wrap">
+                <input type="number" class="tier-threshold-input" id="yt-t2-threshold" value="50000" min="0">
+                <div class="spin-btns">
+                    <div class="spin-btn" onclick="spinInput('yt-t2-threshold',5000)">▲</div>
+                    <div class="spin-btn" onclick="spinInput('yt-t2-threshold',-5000)">▼</div>
+                </div>
+            </div><span class="tier-threshold-suffix">просм.</span></div>
+                        <div class="tier-price">+<span id="yt-t2-price-show">300 ₽</span> → итого <span id="yt-t2-total-show">800 ₽</span> / видео</div>
+                    </div>
+                    <div class="tier-right">
+                        <div class="tier-count-label">Кол-во видео</div>
+                        <div class="tier-input-wrap">
+                        <input type="number" class="tier-input" id="yt-t2-count" min="0" placeholder="0">
+                        <div class="spin-btns">
+                            <div class="spin-btn" onclick="spinInput('yt-t2-count',1)">▲</div>
+                            <div class="spin-btn" onclick="spinInput('yt-t2-count',-1)">▼</div>
+                        </div>
+                    </div>
+                        <div class="price-wrap">
+                        <input type="number" class="tier-price-edit" id="yt-t2-price" value="300" min="0" title="Цена за видео">
+                        <div class="spin-btns">
+                            <div class="spin-btn" onclick="spinInput('yt-t2-price',50)">▲</div>
+                            <div class="spin-btn" onclick="spinInput('yt-t2-price',-50)">▼</div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <!-- Premium -->
+                <div class="tier-card t-premium">
+                    <div class="tier-left">
+                        <div class="tier-threshold-wrap"><span class="tier-threshold-prefix" style="font-size:12px">🏆</span><div class="threshold-wrap">
+                <input type="number" class="tier-threshold-input" id="yt-tp-threshold" value="100000" min="0">
+                <div class="spin-btns">
+                    <div class="spin-btn" onclick="spinInput('yt-tp-threshold',10000)">▲</div>
+                    <div class="spin-btn" onclick="spinInput('yt-tp-threshold',-10000)">▼</div>
+                </div>
+            </div><span class="tier-threshold-suffix">просм.</span></div>
+                        <div class="tier-price">🏆 Бонус: <span id="yt-tp-price-show">2 500 ₽</span> / видео</div>
+                        <div class="tier-price" style="font-size:11px;color:var(--muted);margin-top:3px">Прибавляется к обычной сумме</div>
+                    </div>
+                    <div class="tier-right">
+                        <div class="tier-count-label">Кол-во видео</div>
+                        <div class="tier-input-wrap">
+                        <input type="number" class="tier-input" id="yt-tp-count" min="0" placeholder="0">
+                        <div class="spin-btns">
+                            <div class="spin-btn" onclick="spinInput('yt-tp-count',1)">▲</div>
+                            <div class="spin-btn" onclick="spinInput('yt-tp-count',-1)">▼</div>
+                        </div>
+                    </div>
+                        <div class="price-wrap">
+                        <input type="number" class="tier-price-edit" id="yt-tp-price" value="2500" min="0" title="Цена за видео">
+                        <div class="spin-btns">
+                            <div class="spin-btn" onclick="spinInput('yt-tp-price',50)">▲</div>
+                            <div class="spin-btn" onclick="spinInput('yt-tp-price',-50)">▼</div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-primary btn-yt-calc" onclick="calcPlatform('yt')">▶️ Рассчитать YouTube</button>
+            <div class="result" id="yt-result"></div>
+        </div>
     </div>
-    <button class="btn-primary btn-yt-calc" onclick="calcPlatform('yt')">▶️ Рассчитать YouTube</button>
-  </div>
-</div>
 
-<!-- ═══════════ TIKTOK ═══════════ -->
-<div class="screen" id="screen-tt">
-  <div class="card">
-    <div class="calc-header">
-      <div class="back-btn" onclick="goTo('home')">←</div>
-      <div class="calc-header-info">
-        <div class="calc-platform-badge">🎵 TikTok</div>
-        <div class="calc-sub">Оплата по просмотрам видео</div>
-      </div>
+    <!-- TIKTOK -->
+    <div class="screen" id="screen-tt">
+        <div class="card">
+            <div class="calc-header">
+                <div class="back-btn" onclick="goTo('home')">←</div>
+                <div class="calc-header-info">
+                    <div class="calc-platform-badge">🎵 TikTok</div>
+                    <div class="calc-sub">Оплата по просмотрам видео</div>
+                </div>
+            </div>
+            <div class="field">
+                <label>Месяц</label>
+                <select id="tt-month">
+                    <option>Январь</option><option>Февраль</option><option>Март</option>
+                    <option>Апрель</option><option>Май</option><option>Июнь</option>
+                    <option>Июль</option><option>Август</option><option>Сентябрь</option>
+                    <option>Октябрь</option><option>Ноябрь</option><option>Декабрь</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Всего видео за месяц</label>
+                <div class="spin-wrap">
+                    <input type="number" id="tt-total-videos" min="0" placeholder="0" style="padding-right:36px">
+                    <div class="spin-btns">
+                        <div class="spin-btn" onclick="spinInput('tt-total-videos',1)">▲</div>
+                        <div class="spin-btn" onclick="spinInput('tt-total-videos',-1)">▼</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Видео по просмотрам</div>
+            <div class="tiers">
+                <!-- Tier 1 -->
+                <div class="tier-card t1">
+                    <div class="tier-left">
+                        <div class="tier-threshold-wrap"><span class="tier-threshold-prefix t1-color">от</span><div class="threshold-wrap">
+                <input type="number" class="tier-threshold-input" id="tt-t1-threshold" value="10000" min="0">
+                <div class="spin-btns">
+                    <div class="spin-btn" onclick="spinInput('tt-t1-threshold',1000)">▲</div>
+                    <div class="spin-btn" onclick="spinInput('tt-t1-threshold',-1000)">▼</div>
+                </div>
+            </div><span class="tier-threshold-suffix">просм.</span></div>
+                        <div class="tier-price">Цена: <span id="tt-t1-price-show">300 ₽</span> / видео</div>
+                    </div>
+                    <div class="tier-right">
+                        <div class="tier-count-label">Кол-во видео</div>
+                        <div class="tier-input-wrap">
+                        <input type="number" class="tier-input" id="tt-t1-count" min="0" placeholder="0">
+                        <div class="spin-btns">
+                            <div class="spin-btn" onclick="spinInput('tt-t1-count',1)">▲</div>
+                            <div class="spin-btn" onclick="spinInput('tt-t1-count',-1)">▼</div>
+                        </div>
+                    </div>
+                        <div class="price-wrap">
+                        <input type="number" class="tier-price-edit" id="tt-t1-price" value="300" min="0" title="Цена за видео">
+                        <div class="spin-btns">
+                            <div class="spin-btn" onclick="spinInput('tt-t1-price',50)">▲</div>
+                            <div class="spin-btn" onclick="spinInput('tt-t1-price',-50)">▼</div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <!-- Tier 2 -->
+                <div class="tier-card t2">
+                    <div class="tier-left">
+                        <div class="tier-threshold-wrap"><span class="tier-threshold-prefix t2-color">от</span><div class="threshold-wrap">
+                <input type="number" class="tier-threshold-input" id="tt-t2-threshold" value="50000" min="0">
+                <div class="spin-btns">
+                    <div class="spin-btn" onclick="spinInput('tt-t2-threshold',5000)">▲</div>
+                    <div class="spin-btn" onclick="spinInput('tt-t2-threshold',-5000)">▼</div>
+                </div>
+            </div><span class="tier-threshold-suffix">просм.</span></div>
+                        <div class="tier-price">+<span id="tt-t2-price-show">300 ₽</span> → итого <span id="tt-t2-total-show">600 ₽</span> / видео</div>
+                    </div>
+                    <div class="tier-right">
+                        <div class="tier-count-label">Кол-во видео</div>
+                        <div class="tier-input-wrap">
+                        <input type="number" class="tier-input" id="tt-t2-count" min="0" placeholder="0">
+                        <div class="spin-btns">
+                            <div class="spin-btn" onclick="spinInput('tt-t2-count',1)">▲</div>
+                            <div class="spin-btn" onclick="spinInput('tt-t2-count',-1)">▼</div>
+                        </div>
+                    </div>
+                        <div class="price-wrap">
+                        <input type="number" class="tier-price-edit" id="tt-t2-price" value="300" min="0" title="Цена за видео">
+                        <div class="spin-btns">
+                            <div class="spin-btn" onclick="spinInput('tt-t2-price',50)">▲</div>
+                            <div class="spin-btn" onclick="spinInput('tt-t2-price',-50)">▼</div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <!-- Tier 3 -->
+                <div class="tier-card t3">
+                    <div class="tier-left">
+                        <div class="tier-threshold-wrap"><span class="tier-threshold-prefix t3-color">от</span><div class="threshold-wrap">
+                <input type="number" class="tier-threshold-input" id="tt-t3-threshold" value="100000" min="0">
+                <div class="spin-btns">
+                    <div class="spin-btn" onclick="spinInput('tt-t3-threshold',10000)">▲</div>
+                    <div class="spin-btn" onclick="spinInput('tt-t3-threshold',-10000)">▼</div>
+                </div>
+            </div><span class="tier-threshold-suffix">просм.</span></div>
+                        <div class="tier-price">+<span id="tt-t3-price-show">500 ₽</span> → итого <span id="tt-t3-total-show">1 100 ₽</span> / видео</div>
+                    </div>
+                    <div class="tier-right">
+                        <div class="tier-count-label">Кол-во видео</div>
+                        <div class="tier-input-wrap">
+                        <input type="number" class="tier-input" id="tt-t3-count" min="0" placeholder="0">
+                        <div class="spin-btns">
+                            <div class="spin-btn" onclick="spinInput('tt-t3-count',1)">▲</div>
+                            <div class="spin-btn" onclick="spinInput('tt-t3-count',-1)">▼</div>
+                        </div>
+                    </div>
+                        <div class="price-wrap">
+                        <input type="number" class="tier-price-edit" id="tt-t3-price" value="500" min="0" title="Цена за видео">
+                        <div class="spin-btns">
+                            <div class="spin-btn" onclick="spinInput('tt-t3-price',50)">▲</div>
+                            <div class="spin-btn" onclick="spinInput('tt-t3-price',-50)">▼</div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <!-- Premium -->
+                <div class="tier-card t-premium">
+                    <div class="tier-left">
+                        <div class="tier-threshold-wrap"><span class="tier-threshold-prefix" style="font-size:12px">🏆</span><div class="threshold-wrap">
+                <input type="number" class="tier-threshold-input" id="tt-tp-threshold" value="500000" min="0">
+                <div class="spin-btns">
+                    <div class="spin-btn" onclick="spinInput('tt-tp-threshold',50000)">▲</div>
+                    <div class="spin-btn" onclick="spinInput('tt-tp-threshold',-50000)">▼</div>
+                </div>
+            </div><span class="tier-threshold-suffix">просм.</span></div>
+                        <div class="tier-price">🏆 Бонус: <span id="tt-tp-price-show">2 000 ₽</span> / видео</div>
+                    </div>
+                    <div class="tier-right">
+                        <div class="tier-count-label">Кол-во видео</div>
+                        <div class="tier-input-wrap">
+                        <input type="number" class="tier-input" id="tt-tp-count" min="0" placeholder="0">
+                        <div class="spin-btns">
+                            <div class="spin-btn" onclick="spinInput('tt-tp-count',1)">▲</div>
+                            <div class="spin-btn" onclick="spinInput('tt-tp-count',-1)">▼</div>
+                        </div>
+                    </div>
+                        <div class="price-wrap">
+                        <input type="number" class="tier-price-edit" id="tt-tp-price" value="2000" min="0" title="Цена за видео">
+                        <div class="spin-btns">
+                            <div class="spin-btn" onclick="spinInput('tt-tp-price',50)">▲</div>
+                            <div class="spin-btn" onclick="spinInput('tt-tp-price',-50)">▼</div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-primary btn-tt-calc" onclick="calcPlatform('tt')">🎵 Рассчитать TikTok</button>
+            <div class="result" id="tt-result"></div>
+        </div>
     </div>
-    <div class="field">
-      <label>Месяц</label>
-      <select id="tt-month"></select>
+
+    <!-- TOTAL -->
+    <div class="screen" id="screen-total">
+        <div class="total-screen-card" id="total-card">
+            <div class="total-label">Итоговый расчёт</div>
+            <div class="total-title">Полная зарплата 💎</div>
+            <div class="total-platforms">
+                <div class="total-platform-row delay1" id="total-row-yt">
+                    <div class="tpr-left"><span class="tpr-icon">▶️</span><span class="tpr-name">YouTube</span></div>
+                    <span class="tpr-amount tpr-yt" id="total-yt-amount">—</span>
+                </div>
+                <div class="total-platform-row delay2" id="total-row-tt">
+                    <div class="tpr-left"><span class="tpr-icon">🎵</span><span class="tpr-name">TikTok</span></div>
+                    <span class="tpr-amount tpr-tt" id="total-tt-amount">—</span>
+                </div>
+            </div>
+            <div class="total-divider"></div>
+            <div class="total-sum-label">Итого за месяц</div>
+            <div class="total-sum-amount" id="total-sum">0 ₽</div>
+            <button class="btn-ghost" style="margin-top:28px" onclick="goTo('home')">← Вернуться на главную</button>
+        </div>
     </div>
 
-    <div class="section-title">Видео</div>
-    <div class="videos-list" id="tt-videos-list"></div>
-    <button class="add-video-btn" onclick="addVideo('tt')">+ Добавить видео</button>
-
-    <div class="salary-summary" id="tt-summary">
-      <div class="salary-summary-label">Разбивка</div>
-      <div class="salary-summary-rows" id="tt-summary-rows"></div>
-      <div class="salary-summary-total">
-        <div class="salary-summary-total-label">Итого</div>
-        <div class="salary-summary-total-val" id="tt-summary-total">0 ₽</div>
-      </div>
+    <!-- RESULT OVERLAY -->
+    <div class="result-overlay" id="result-overlay">
+        <div class="overlay-bg" onclick="closeOverlay()"></div>
+        <div class="overlay-card">
+            <div class="overlay-platform-badge" id="ov-badge">▶️ YouTube</div>
+            <div class="overlay-label"><span id="ov-label-tw"></span></div>
+            <div class="overlay-amount" id="ov-amount">0 ₽</div>
+            <div class="overlay-sub"><span id="ov-sub-tw"></span></div>
+            <div class="overlay-breakdown" id="ov-breakdown"></div>
+            <div id="ov-missed" style="min-height:24px;margin-bottom:8px;transition:opacity 0.4s;opacity:0"></div>
+            <button class="overlay-next-btn" id="ov-next-btn" onclick="overlayNext()">
+                <span id="ov-next-label">Далее → TikTok</span>
+            </button>
+        </div>
     </div>
-    <button class="btn-primary btn-tt-calc" onclick="calcPlatform('tt')">🎵 Рассчитать TikTok</button>
-  </div>
-</div>
 
-<!-- ═══════════ TOTAL ═══════════ -->
-<div class="screen" id="screen-total">
-  <div class="total-screen-card" id="total-card">
-    <div class="total-label">Итоговый расчёт</div>
-    <div class="total-title">Полная зарплата 💎</div>
-    <div class="total-platforms">
-      <div class="total-platform-row delay1" id="total-row-yt">
-        <div class="tpr-left"><span class="tpr-icon">▶️</span><span class="tpr-name">YouTube</span></div>
-        <span class="tpr-amount tpr-yt" id="total-yt-amount">—</span>
-      </div>
-      <div class="total-platform-row delay2" id="total-row-tt">
-        <div class="tpr-left"><span class="tpr-icon">🎵</span><span class="tpr-name">TikTok</span></div>
-        <span class="tpr-amount tpr-tt" id="total-tt-amount">—</span>
-      </div>
-    </div>
-    <div class="total-divider"></div>
-    <div class="total-sum-label">Итого за месяц</div>
-    <div class="total-sum-amount" id="total-sum">0 ₽</div>
-    <button class="btn-ghost" style="margin-top:28px" onclick="goTo('home')">← На главную</button>
-  </div>
-</div>
+    <script>
 
-<!-- ═══════════ RESULT OVERLAY ═══════════ -->
-<div class="result-overlay" id="result-overlay">
-  <div class="overlay-bg" onclick="closeOverlay()"></div>
-  <div class="overlay-card">
-    <div class="overlay-platform-badge" id="ov-badge">▶️ YouTube</div>
-    <div class="overlay-label"><span id="ov-label-tw"></span></div>
-    <div class="overlay-amount" id="ov-amount">0 ₽</div>
-    <div class="overlay-sub"><span id="ov-sub-tw"></span></div>
-    <div class="overlay-breakdown" id="ov-breakdown"></div>
-    <button class="overlay-next-btn" id="ov-next-btn" onclick="overlayNext()">
-      <span id="ov-next-label">Далее → TikTok</span>
-    </button>
-  </div>
-</div>
-
-<!-- ═══════════ SETTINGS ═══════════ -->
-<div class="screen" id="screen-settings">
-  <div class="card">
-    <div class="calc-header">
-      <div class="back-btn" onclick="goTo('home')">←</div>
-      <div class="calc-header-info">
-        <div class="calc-platform-badge">⚙️ Настройки</div>
-        <div class="calc-sub">Тема оформления</div>
-      </div>
-    </div>
-    <div class="section-title">Тема</div>
-    <div class="theme-grid">
-      <div class="theme-swatch sw-space" data-theme="space" onclick="setTheme('space')"><div class="ts-dots"><div class="ts-dot" style="background:#6c63ff"></div><div class="ts-dot" style="background:#ff6584"></div><div class="ts-dot" style="background:#43e97b"></div></div><div class="ts-name">Space</div><div class="ts-check">✓</div></div>
-      <div class="theme-swatch sw-sunset" data-theme="sunset" onclick="setTheme('sunset')"><div class="ts-dots"><div class="ts-dot" style="background:#ff6b35"></div><div class="ts-dot" style="background:#ff9500"></div><div class="ts-dot" style="background:#ffcc02"></div></div><div class="ts-name">Sunset</div><div class="ts-check">✓</div></div>
-      <div class="theme-swatch sw-ocean" data-theme="ocean" onclick="setTheme('ocean')"><div class="ts-dots"><div class="ts-dot" style="background:#00b4d8"></div><div class="ts-dot" style="background:#0077b6"></div><div class="ts-dot" style="background:#90e0ef"></div></div><div class="ts-name">Ocean</div><div class="ts-check">✓</div></div>
-      <div class="theme-swatch sw-forest" data-theme="forest" onclick="setTheme('forest')"><div class="ts-dots"><div class="ts-dot" style="background:#2ecc71"></div><div class="ts-dot" style="background:#27ae60"></div><div class="ts-dot" style="background:#a8e6cf"></div></div><div class="ts-name">Forest</div><div class="ts-check">✓</div></div>
-      <div class="theme-swatch sw-rose" data-theme="rose" onclick="setTheme('rose')"><div class="ts-dots"><div class="ts-dot" style="background:#e91e8c"></div><div class="ts-dot" style="background:#ff6eb4"></div><div class="ts-dot" style="background:#ffd6ec"></div></div><div class="ts-name">Rose</div><div class="ts-check">✓</div></div>
-      <div class="theme-swatch sw-gold" data-theme="gold" onclick="setTheme('gold')"><div class="ts-dots"><div class="ts-dot" style="background:#f4c400"></div><div class="ts-dot" style="background:#ff8c00"></div><div class="ts-dot" style="background:#fff0a0"></div></div><div class="ts-name">Gold</div><div class="ts-check">✓</div></div>
-    </div>
-    <div class="section-title" style="margin-top:28px">Администратор</div>
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px">
-      <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--muted);margin-bottom:10px;display:block">Введи пароль администратора чтобы открыть панель управления</label>
-      <div style="display:flex;gap:8px">
-        <input type="password" id="admin-pass-input" placeholder="Пароль" style="flex:1;margin:0" onkeydown="if(event.key==='Enter')checkAdminPass()">
-        <button onclick="checkAdminPass()" class="btn-primary" style="width:auto;margin:0;padding:12px 18px;font-size:12px">Войти</button>
-      </div>
-      <div id="admin-pass-error" style="font-size:11px;color:#ff6584;margin-top:8px;display:none">Неверный пароль</div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════ HISTORY ═══════════ -->
-<div class="screen" id="screen-history">
-  <div class="card">
-    <div class="calc-header">
-      <div class="back-btn" onclick="goTo('home')">←</div>
-      <div class="calc-header-info">
-        <div class="calc-platform-badge">📋 История</div>
-        <div class="calc-sub">Сохранённые расчёты</div>
-      </div>
-      <div class="back-btn" onclick="confirmClearHistory()" style="color:#ff6584;border-color:rgba(255,101,132,.2)" title="Очистить">🗑</div>
-    </div>
-    <div id="history-list"></div>
-  </div>
-</div>
-
-<script>
-// ══════════════════════════════════════════════
-//  КОНФИГ
-// ══════════════════════════════════════════════
-var ADMIN_PASSWORD = 'admin2024'; // ← смени на свой пароль
-
-// YouTube тарифы
-var YT = {
-  tiers: [
-    { views: 5000,   pay: 500, label: '5 000+ просм.' },
-    { views: 50000,  pay: 300, label: '50 000+ просм.' },
-  ],
-  premium: { views: 100000, pay: 2500, label: '100 000+ 🏆' },
-  minViews: 5000,
-};
-
-// TikTok тарифы
-var TT = {
-  tiers: [
-    { views: 10000,  pay: 300, label: '10 000+ просм.' },
-    { views: 50000,  pay: 300, label: '50 000+ просм.' },
-    { views: 100000, pay: 500, label: '100 000+ просм.' },
-  ],
-  premium: { views: 500000, pay: 2000, label: '500 000+ 🏆' },
-  minViews: 10000,
-};
-
-// ══════════════════════════════════════════════
-//  СОСТОЯНИЕ
-// ══════════════════════════════════════════════
-var state = { yt: null, tt: null };
-var maintenanceMode = JSON.parse(localStorage.getItem('maint') || 'false');
-var isAdmin = JSON.parse(sessionStorage.getItem('isAdmin') || 'false');
-
-var months = ['Январь','Февраль','Март','Апрель','Май','Июнь',
-              'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-
-// ══════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════
-(function init() {
-  // Месяцы в select
-  var cur = months[new Date().getMonth()];
-  ['yt-month','tt-month'].forEach(function(id) {
-    var sel = document.getElementById(id);
-    months.forEach(function(m) {
-      var o = document.createElement('option');
-      o.textContent = m;
-      if (m === cur) o.selected = true;
-      sel.appendChild(o);
-    });
-  });
-
-  // Shooting stars
-  var field = document.getElementById('star-field');
-  var cnt = window.innerWidth < 600 ? 8 : 16;
-  for (var i = 0; i < cnt; i++) {
-    var s = document.createElement('div');
-    s.className = 'shooting-star';
-    var ang = 30 + Math.random() * 20, dist = 200 + Math.random() * 400;
-    s.style.cssText = 'left:'+Math.random()*110+'%;top:'+Math.random()*80+'%;'
-      +'--sx:'+-Math.cos(ang*Math.PI/180)*dist+'px;--sy:'+Math.sin(ang*Math.PI/180)*dist+'px;'
-      +'--sdur:'+(4+Math.random()*6).toFixed(1)+'s;--sdelay:'+(Math.random()*10).toFixed(1)+'s';
-    field.appendChild(s);
-  }
-
-  // Тема
-  setTheme(localStorage.getItem('theme') || 'space');
-
-  // Начальные видео
-  addVideo('yt');
-  addVideo('tt');
-
-  // Обновить UI мейнтенанса
-  applyMaintenanceUI();
-
-  // Если уже авторизован — показать панель
-  if (isAdmin) showAdminPanel();
-})();
-
-// ══════════════════════════════════════════════
-//  НАВИГАЦИЯ
-// ══════════════════════════════════════════════
-function goTo(screen) {
-  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
-  document.getElementById('screen-'+screen).classList.add('active');
-  window.scrollTo(0,0);
-  if (screen === 'history') setTimeout(renderHistory, 80);
-}
-
-function tryGo(screen) {
-  if (maintenanceMode && !isAdmin) { goTo('maint'); return; }
-  goTo(screen);
-}
-
-// ══════════════════════════════════════════════
-//  ВИДЕО (добавить / удалить / пересчитать)
-// ══════════════════════════════════════════════
-var videoCounters = { yt: 0, tt: 0 };
-
-function calcVideo(platform, views) {
-  var cfg = platform === 'yt' ? YT : TT;
-  if (views < cfg.minViews) return { base: 0, premiumEligible: false };
-  var base = 0;
-  cfg.tiers.forEach(function(t) { if (views >= t.views) base += t.pay; });
-  return { base: base, premiumEligible: views >= cfg.premium.views };
-}
-
-function addVideo(platform) {
-  videoCounters[platform]++;
-  var idx = videoCounters[platform];
-  var list = document.getElementById(platform+'-videos-list');
-  var cfg  = platform === 'yt' ? YT : TT;
-
-  var div = document.createElement('div');
-  div.className = 'video-entry';
-  div.id = platform+'-video-'+idx;
-  div.innerHTML =
-    '<div class="video-entry-header">'
-      +'<span class="video-entry-num">ВИДЕО '+idx+'</span>'
-      +'<button class="video-entry-del" onclick="removeVideo(\''+platform+'\','+idx+')">✕</button>'
-    +'</div>'
-    +'<div class="video-entry-row">'
-      +'<div class="video-entry-views">'
-        +'<label>Просмотры</label>'
-        +'<div class="spin-wrap">'
-          +'<input type="number" id="'+platform+'-v'+idx+'-views" min="0" placeholder="0" '
-            +'oninput="onViewsInput(\''+platform+'\','+idx+')" style="padding-right:36px">'
-          +'<div class="spin-btns">'
-            +'<div class="spin-btn" onclick="spinVideoViews(\''+platform+'\','+idx+',1000)">▲</div>'
-            +'<div class="spin-btn" onclick="spinVideoViews(\''+platform+'\','+idx+',-1000)">▼</div>'
-          +'</div>'
-        +'</div>'
-      +'</div>'
-    +'</div>'
-    // Премия чекбокс (скрыт пока не достигнут порог)
-    +'<label class="video-entry-premium" id="'+platform+'-v'+idx+'-premium-row" '
-      +'onclick="togglePremium(\''+platform+'\','+idx+')">'
-      +'<input type="checkbox" id="'+platform+'-v'+idx+'-premium" onclick="event.stopPropagation()">'
-      +'<span class="video-entry-premium-label">🏆 Добавить премию ('+cfg.premium.views.toLocaleString('ru-RU')+' просм.)</span>'
-      +'<span class="video-entry-premium-bonus">+'+cfg.premium.pay.toLocaleString('ru-RU')+' ₽</span>'
-    +'</label>'
-    // Итог по видео
-    +'<div class="video-entry-result" id="'+platform+'-v'+idx+'-result"></div>';
-
-  list.appendChild(div);
-  updateSummary(platform);
-}
-
-function removeVideo(platform, idx) {
-  var el = document.getElementById(platform+'-video-'+idx);
-  if (el) el.remove();
-  updateSummary(platform);
-}
-
-function spinVideoViews(platform, idx, delta) {
-  var inp = document.getElementById(platform+'-v'+idx+'-views');
-  if (!inp) return;
-  inp.value = Math.max(0, (parseInt(inp.value)||0) + delta);
-  onViewsInput(platform, idx);
-}
-
-function onViewsInput(platform, idx) {
-  var inp  = document.getElementById(platform+'-v'+idx+'-views');
-  var views = parseInt(inp.value) || 0;
-  var result = calcVideo(platform, views);
-  var premRow = document.getElementById(platform+'-v'+idx+'-premium-row');
-  var premCb  = document.getElementById(platform+'-v'+idx+'-premium');
-  var resEl   = document.getElementById(platform+'-v'+idx+'-result');
-  var cfg = platform === 'yt' ? YT : TT;
-
-  // Показать/скрыть строку премии
-  if (result.premiumEligible) {
-    premRow.classList.add('eligible');
-  } else {
-    premRow.classList.remove('eligible','active');
-    if (premCb) premCb.checked = false;
-  }
-
-  // Показать итог видео
-  if (views > 0) {
-    var prem = (premCb && premCb.checked && result.premiumEligible) ? cfg.premium.pay : 0;
-    var total = result.base + prem;
-    if (result.base === 0) {
-      resEl.innerHTML = '❌ Не набрало '+cfg.minViews.toLocaleString('ru-RU')+' просм.';
-      resEl.style.color = 'var(--accent2)';
-    } else {
-      resEl.innerHTML = '💰 <strong>'+total.toLocaleString('ru-RU')+' ₽</strong>'
-        +(prem ? ' <span style="color:var(--muted);font-size:11px">(вкл. +'+prem.toLocaleString('ru-RU')+' ₽ премия)</span>' : '');
-      resEl.style.color = '';
+    // Generate shooting stars
+    (function() {
+        var field = document.getElementById('star-field');
+        if (!field) return;
+        var count = window.innerWidth < 600 ? 8 : 16;
+        for (var i = 0; i < count; i++) {
+            var s = document.createElement('div');
+            s.className = 'shooting-star';
+            var angle = 30 + Math.random() * 20;
+            var dist  = 200 + Math.random() * 400;
+            var sx = -Math.cos(angle * Math.PI/180) * dist;
+            var sy =  Math.sin(angle * Math.PI/180) * dist;
+            s.style.cssText = [
+                'left:' + (Math.random() * 110) + '%',
+                'top:'  + (Math.random() * 80)  + '%',
+                '--sx:' + sx.toFixed(0) + 'px',
+                '--sy:' + sy.toFixed(0) + 'px',
+                '--sdur:' + (4 + Math.random() * 6).toFixed(1) + 's',
+                '--sdelay:' + (Math.random() * 10).toFixed(1) + 's'
+            ].join(';');
+            field.appendChild(s);
+        }
+    })();
+    // ═══════════ SOUND ENGINE ═══════════
+    var AudioCtx = window.AudioContext || window.webkitAudioContext;
+    var actx = null;
+    function getCtx() {
+        if (!actx) actx = new AudioCtx();
+        if (actx.state === 'suspended') actx.resume();
+        return actx;
     }
-    resEl.classList.add('show');
-  } else {
-    resEl.classList.remove('show');
-  }
+    function playTone(freq, type, duration, volume, attack) {
+        try {
+            var ctx = getCtx();
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = type || 'sine';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            gain.gain.setValueAtTime(0, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(volume || 0.3, ctx.currentTime + (attack || 0.01));
+            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + (duration || 0.15));
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + (duration || 0.15) + 0.05);
+        } catch(e) {}
+    }
+    function sfxClick() { playTone(520,'sine',0.08,0.25,0.005); playTone(800,'sine',0.05,0.1,0.005); }
+    function sfxType() {
+        try {
+            var ctx = getCtx();
+            var buf = ctx.createBuffer(1, ctx.sampleRate * 0.04, ctx.sampleRate);
+            var d = buf.getChannelData(0);
+            for (var i = 0; i < d.length; i++) d[i] = (Math.random()*2-1)*Math.pow(1-i/d.length,3);
+            var src = ctx.createBufferSource(); src.buffer = buf;
+            var gain = ctx.createGain(); gain.gain.setValueAtTime(0.08,ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.04);
+            var f = ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=3000; f.Q.value=0.8;
+            src.connect(f); f.connect(gain); gain.connect(ctx.destination); src.start();
+        } catch(e) {}
+    }
+    function sfxCalc() { [330,415,494,659].forEach(function(f,i){ setTimeout(function(){ playTone(f,'triangle',0.18,0.22,0.01); },i*55); }); }
+    function sfxTotal() {
+        [261,329,392,523,659,784,1046].forEach(function(f,i){ setTimeout(function(){ playTone(f,'sine',0.25,0.28-i*0.02,0.01); },i*80); });
+        setTimeout(function(){ [1318,1568,2093].forEach(function(f,i){ setTimeout(function(){ playTone(f,'sine',0.4,0.1,0.02); },i*60); }); },600);
+    }
+    function sfxError() { playTone(220,'sawtooth',0.15,0.2,0.01); setTimeout(function(){ playTone(180,'sawtooth',0.2,0.2,0.01); },120); }
+    var coinInterval = null;
+    function sfxCountStart() {
+        var cf=[880,1100,990,1200]; var ci=0;
+        coinInterval = setInterval(function(){ playTone(cf[ci%4],'sine',0.06,0.12,0.005); ci++; },60);
+    }
+    function sfxCountStop() { if(coinInterval){ clearInterval(coinInterval); coinInterval=null; } playTone(1318,'sine',0.3,0.25,0.01); }
 
-  updateSummary(platform);
-}
+    // ═══════════ STATE & NAV ═══════════
+    var state = { yt: null, tt: null };
+    var months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+    var cur = months[new Date().getMonth()];
+    document.getElementById('yt-month').value = cur;
+    document.getElementById('tt-month').value = cur;
 
-function togglePremium(platform, idx) {
-  var cb = document.getElementById(platform+'-v'+idx+'-premium');
-  if (!cb) return;
-  // Чекбокс уже переключается кликом на label, просто обновляем
-  var row = document.getElementById(platform+'-v'+idx+'-premium-row');
-  if (cb.checked) row.classList.add('active'); else row.classList.remove('active');
-  onViewsInput(platform, idx);
-}
-
-function getVideos(platform) {
-  var cfg  = platform === 'yt' ? YT : TT;
-  var list = document.getElementById(platform+'-videos-list');
-  var entries = list.querySelectorAll('.video-entry');
-  var result = [];
-  entries.forEach(function(el) {
-    var m = el.id.match(/\d+$/);
-    if (!m) return;
-    var idx = m[0];
-    var inp = document.getElementById(platform+'-v'+idx+'-views');
-    var cb  = document.getElementById(platform+'-v'+idx+'-premium');
-    if (!inp) return;
-    var views = parseInt(inp.value) || 0;
-    var calc  = calcVideo(platform, views);
-    var premiumOn = !!(cb && cb.checked && calc.premiumEligible);
-    result.push({
-      views: views,
-      base: calc.base,
-      premiumEligible: calc.premiumEligible,
-      premiumOn: premiumOn,
-      total: calc.base + (premiumOn ? cfg.premium.pay : 0),
-    });
-  });
-  return result;
-}
-
-function updateSummary(platform) {
-  var cfg     = platform === 'yt' ? YT : TT;
-  var videos  = getVideos(platform);
-  var summDiv = document.getElementById(platform+'-summary');
-  var rows    = document.getElementById(platform+'-summary-rows');
-  var totalEl = document.getElementById(platform+'-summary-total');
-
-  if (!videos.length) { summDiv.classList.remove('show'); return; }
-
-  var base = 0, premium = 0, missed = 0;
-  videos.forEach(function(v) {
-    base    += v.base;
-    premium += v.premiumOn ? cfg.premium.pay : 0;
-    if (v.views > 0 && v.base === 0) missed++;
-  });
-
-  var html = '';
-  if (base)    html += '<div class="salary-summary-row"><span>Базовая выплата</span><span>'+base.toLocaleString('ru-RU')+' ₽</span></div>';
-  if (premium) html += '<div class="salary-summary-row"><span>Премии (🏆)</span><span>'+premium.toLocaleString('ru-RU')+' ₽</span></div>';
-  if (missed)  html += '<div class="salary-summary-row"><span style="color:var(--accent2)">❌ Не набрали норму</span><span style="color:var(--accent2)">'+missed+' вид.</span></div>';
-  rows.innerHTML = html;
-  totalEl.textContent = (base+premium).toLocaleString('ru-RU')+' ₽';
-  summDiv.classList.add('show');
-}
-
-// ══════════════════════════════════════════════
-//  РАСЧЁТ
-// ══════════════════════════════════════════════
-var overlayCurrentPlatform = null;
-
-function calcPlatform(p) {
-  var month  = document.getElementById(p+'-month').value;
-  var videos = getVideos(p);
-  var cfg    = p === 'yt' ? YT : TT;
-
-  if (!videos.length) return;
-
-  var salary   = videos.reduce(function(a,v){ return a+v.total; }, 0);
-  var counted  = videos.filter(function(v){ return v.base > 0; }).length;
-  var missed   = videos.filter(function(v){ return v.views>0 && v.base===0; }).length;
-  var premCnt  = videos.filter(function(v){ return v.premiumOn; }).length;
-
-  state[p] = { salary: salary, month: month, videos: videos, counted: counted, missed: missed, premCount: premCnt };
-  showResultOverlay(p, salary, month, counted, missed, premCnt, cfg);
-  updateHomeStatus();
-}
-
-// ══════════════════════════════════════════════
-//  OVERLAY
-// ══════════════════════════════════════════════
-function showResultOverlay(p, salary, month, counted, missed, premCnt, cfg) {
-  overlayCurrentPlatform = p;
-  var overlay  = document.getElementById('result-overlay');
-  var badge    = document.getElementById('ov-badge');
-  var labelEl  = document.getElementById('ov-label-tw');
-  var amountEl = document.getElementById('ov-amount');
-  var subEl    = document.getElementById('ov-sub-tw');
-  var bd       = document.getElementById('ov-breakdown');
-  var nextBtn  = document.getElementById('ov-next-btn');
-  var nextLbl  = document.getElementById('ov-next-label');
-
-  labelEl.textContent=''; subEl.textContent=''; amountEl.textContent='0 ₽'; bd.innerHTML='';
-  nextBtn.classList.remove('reveal');
-
-  badge.textContent = p==='yt' ? '▶️ YouTube Shorts' : '🎵 TikTok';
-  nextLbl.textContent = (state.yt&&state.tt) ? 'Далее → Полная сумма 💎'
-                      : p==='yt' ? 'Далее → TikTok 🎵' : 'Далее → YouTube ▶️';
-
-  overlay.classList.add('visible');
-  document.body.style.overflow = 'hidden';
-
-  setTimeout(function(){
-    typewriter(labelEl, 'Зарплата за '+month, 38, function(){
-      animNum(amountEl, salary, 900, function(){
-        typewriter(subEl, counted+' видео набрали норму', 35, function(){
-          var chips = [];
-          if (counted) chips.push({ cls:'chip-base', text:'Базовая · '+counted+' вид.' });
-          if (premCnt) chips.push({ cls:'chip-premium', text:'Премии 🏆 · '+premCnt+' вид.' });
-          if (missed)  chips.push({ cls:'chip-missed', text:'❌ '+missed+' без нормы' });
-          chips.forEach(function(c,i){
-            setTimeout(function(){
-              var el=document.createElement('span');
-              el.className='chip '+c.cls; el.textContent=c.text;
-              bd.appendChild(el);
-            }, i*300);
-          });
-          setTimeout(function(){ nextBtn.classList.add('reveal'); }, chips.length*300+400);
+    // Live price label updates
+    function bindPricePreview(priceId, showId) {
+        var inp = document.getElementById(priceId);
+        var show = document.getElementById(showId);
+        if (!inp || !show) return;
+        inp.addEventListener('input', function() {
+            var v = parseFloat(inp.value) || 0;
+            show.textContent = v.toLocaleString('ru-RU') + ' ₽';
         });
-      });
+    }
+    // Simple price label update
+    bindPricePreview('yt-t1-price','yt-t1-price-show');
+    bindPricePreview('yt-t2-price','yt-t2-price-show');
+    bindPricePreview('yt-tp-price','yt-tp-price-show');
+    bindPricePreview('tt-t1-price','tt-t1-price-show');
+    bindPricePreview('tt-t2-price','tt-t2-price-show');
+    bindPricePreview('tt-t3-price','tt-t3-price-show');
+    bindPricePreview('tt-tp-price','tt-tp-price-show');
+
+    // Update cumulative "итого X ₽ / видео" labels when any price changes
+    function updateCumulativeLabels() {
+        var yt1 = parseFloat(document.getElementById('yt-t1-price').value)||0;
+        var yt2 = parseFloat(document.getElementById('yt-t2-price').value)||0;
+        var el;
+        el = document.getElementById('yt-t2-total-show'); if(el) el.textContent = (yt1+yt2).toLocaleString('ru-RU')+' ₽';
+        // Premium price label updated by bindPricePreview only
+
+        var tt1 = parseFloat(document.getElementById('tt-t1-price').value)||0;
+        var tt2 = parseFloat(document.getElementById('tt-t2-price').value)||0;
+        var tt3 = parseFloat(document.getElementById('tt-t3-price').value)||0;
+        el = document.getElementById('tt-t2-total-show'); if(el) el.textContent = (tt1+tt2).toLocaleString('ru-RU')+' ₽';
+        el = document.getElementById('tt-t3-total-show'); if(el) el.textContent = (tt1+tt2+tt3).toLocaleString('ru-RU')+' ₽';
+        // TT premium price label updated by bindPricePreview only
+    }
+
+    ['yt-t1-price','yt-t2-price','yt-tp-price','tt-t1-price','tt-t2-price','tt-t3-price','tt-tp-price'].forEach(function(id){
+        var inp = document.getElementById(id);
+        if(inp) inp.addEventListener('input', updateCumulativeLabels);
     });
-  }, 200);
-}
+    updateCumulativeLabels();
 
-function closeOverlay() {
-  document.getElementById('result-overlay').classList.remove('visible');
-  document.body.style.overflow = '';
-}
-
-function overlayNext() {
-  var p = overlayCurrentPlatform;
-  closeOverlay();
-  setTimeout(function(){
-    if (state.yt && state.tt) { showTotal(); }
-    else if (p==='yt') { goTo('tt'); }
-    else { goTo('yt'); }
-  }, 350);
-}
-
-// ══════════════════════════════════════════════
-//  TOTAL
-// ══════════════════════════════════════════════
-function showTotal() {
-  goTo('total');
-  var ytSal = state.yt ? state.yt.salary : 0;
-  var ttSal = state.tt ? state.tt.salary : 0;
-  var grand = ytSal + ttSal;
-
-  document.getElementById('total-yt-amount').textContent = state.yt ? state.yt.salary.toLocaleString('ru-RU')+' ₽' : '—';
-  document.getElementById('total-tt-amount').textContent = state.tt ? state.tt.salary.toLocaleString('ru-RU')+' ₽' : '—';
-  document.getElementById('total-sum').textContent = '0 ₽';
-  ['total-row-yt','total-row-tt','total-sum'].forEach(function(id){ document.getElementById(id).classList.remove('show'); });
-
-  setTimeout(function(){ document.getElementById('total-row-yt').classList.add('show'); },100);
-  setTimeout(function(){ document.getElementById('total-row-tt').classList.add('show'); },300);
-  setTimeout(function(){
-    var el = document.getElementById('total-sum');
-    el.classList.add('show');
-    animNum(el, grand, 1200, function(){ spawnStars(document.getElementById('total-card')); });
-  }, 700);
-
-  // Сохраняем в историю
-  var month = (state.yt||state.tt||{}).month || months[new Date().getMonth()];
-  var toSave = [];
-  if (state.yt) toSave.push({ platform:'yt', salary:state.yt.salary, month:state.yt.month, counted:state.yt.counted, missed:state.yt.missed });
-  if (state.tt) toSave.push({ platform:'tt', salary:state.tt.salary, month:state.tt.month, counted:state.tt.counted, missed:state.tt.missed });
-  toSave.push({ platform:'combined', salary:grand, month:month });
-  toSave.forEach(function(r){ histAdd(r); });
-}
-
-function updateHomeStatus() {
-  if (state.yt) document.getElementById('yt-status').textContent = state.yt.salary.toLocaleString('ru-RU')+' ₽';
-  if (state.tt) document.getElementById('tt-status').textContent = state.tt.salary.toLocaleString('ru-RU')+' ₽';
-  if (state.yt && state.tt) {
-    var b = document.getElementById('btn-see-total');
-    b.style.display='block'; b.style.animation='fadeUp .5s cubic-bezier(.16,1,.3,1) both';
-  }
-}
-
-// ══════════════════════════════════════════════
-//  ТЕХНИЧЕСКИЕ РАБОТЫ
-// ══════════════════════════════════════════════
-function toggleMaintenance() {
-  maintenanceMode = document.getElementById('maint-toggle').checked;
-  localStorage.setItem('maint', JSON.stringify(maintenanceMode));
-  applyMaintenanceUI();
-}
-
-function applyMaintenanceUI() {
-  var badge = document.getElementById('maint-badge-home');
-  var tog   = document.getElementById('maint-toggle');
-  var txt   = document.getElementById('maint-status-text');
-
-  if (tog) tog.checked = maintenanceMode;
-  if (maintenanceMode) {
-    badge.style.display = 'inline-flex';
-    if (txt) txt.textContent = 'Включены — пользователи видят заглушку';
-  } else {
-    badge.style.display = 'none';
-    if (txt) txt.textContent = 'Выключены — бот работает';
-  }
-}
-
-// ══════════════════════════════════════════════
-//  АВТОРИЗАЦИЯ АДМИНИСТРАТОРА
-// ══════════════════════════════════════════════
-function checkAdminPass() {
-  var inp = document.getElementById('admin-pass-input');
-  var err = document.getElementById('admin-pass-error');
-  if (inp.value === ADMIN_PASSWORD) {
-    isAdmin = true;
-    sessionStorage.setItem('isAdmin', 'true');
-    err.style.display = 'none';
-    inp.value = '';
-    showAdminPanel();
-    goTo('home');
-  } else {
-    err.style.display = 'block';
-    inp.value = '';
-  }
-}
-
-function showAdminPanel() {
-  document.getElementById('admin-panel').style.display = 'block';
-}
-
-// ══════════════════════════════════════════════
-//  ТЕМЫ
-// ══════════════════════════════════════════════
-function setTheme(name) {
-  document.documentElement.setAttribute('data-theme', name);
-  localStorage.setItem('theme', name);
-  document.querySelectorAll('.theme-swatch').forEach(function(s){
-    s.classList.toggle('active', s.dataset.theme===name);
-  });
-}
-
-// ══════════════════════════════════════════════
-//  ИСТОРИЯ
-// ══════════════════════════════════════════════
-var HIST_KEY = 'salary-hist-v3';
-function histLoad(){ try{ return JSON.parse(localStorage.getItem(HIST_KEY))||[]; }catch(e){ return []; } }
-function histSave(a){ try{ localStorage.setItem(HIST_KEY,JSON.stringify(a)); }catch(e){} }
-function histAdd(r){ var a=histLoad(); r.id=Date.now()+'_'+Math.random().toString(36).slice(2); a.unshift(r); histSave(a); }
-function histDelete(id){ histSave(histLoad().filter(function(r){ return r.id!==id; })); renderHistory(); }
-function confirmClearHistory(){ if(confirm('Очистить всю историю?')){ histSave([]); renderHistory(); } }
-
-function renderHistory() {
-  var list = document.getElementById('history-list');
-  if (!list) return;
-  var records = histLoad();
-  if (!records.length) {
-    list.innerHTML='<div class="history-empty"><div style="font-size:48px;margin-bottom:12px">📭</div>'
-      +'<div style="font-size:13px;color:var(--muted);font-weight:600">История пуста</div>'
-      +'<div style="font-size:12px;color:var(--muted);margin-top:6px">Рассчитай зарплату — она появится здесь</div></div>';
-    return;
-  }
-  var groups={}, order=[];
-  records.forEach(function(r){ var k=r.month||'—'; if(!groups[k]){ groups[k]=[]; order.push(k); } groups[k].push(r); });
-  var combined=records.filter(function(r){ return r.platform==='combined'; });
-  var totalEarned=combined.reduce(function(a,r){ return a+(r.salary||0); },0);
-  var best=combined.reduce(function(a,r){ return Math.max(a,r.salary||0); },0);
-  var out='<div class="hist-stats-row">'
-    +'<div class="hist-stat-card"><div class="hist-stat-val">'+totalEarned.toLocaleString('ru-RU')+' ₽</div><div class="hist-stat-label">Заработано</div></div>'
-    +'<div class="hist-stat-card"><div class="hist-stat-val">'+combined.length+'</div><div class="hist-stat-label">Месяцев</div></div>'
-    +'<div class="hist-stat-card"><div class="hist-stat-val">'+(best||0).toLocaleString('ru-RU')+' ₽</div><div class="hist-stat-label">Лучший</div></div>'
-    +'</div>';
-  order.forEach(function(month){
-    var recs=groups[month];
-    var mTotal=recs.filter(function(r){ return r.platform==='combined'; }).reduce(function(a,r){ return a+(r.salary||0); },0);
-    if(!mTotal) mTotal=recs.reduce(function(a,r){ return a+(r.salary||0); },0);
-    out+='<div class="hist-group"><div class="hist-group-header"><span class="hist-group-month">'+month+'</span><span class="hist-group-total">'+mTotal.toLocaleString('ru-RU')+' ₽</span></div>';
-    recs.forEach(function(r){
-      var isComb=r.platform==='combined', isYt=r.platform==='yt';
-      var cls=isComb?'h-combined':(isYt?'h-yt':'h-tt');
-      var icon=isComb?'💎':(isYt?'▶️':'🎵');
-      var pname=isComb?'Итого':(isYt?'YouTube':'TikTok');
-      var meta='';
-      if(r.counted!==undefined) meta+=r.counted+' вид. с нормой';
-      if(r.missed>0) meta+=(meta?' · ':'')+r.missed+' без нормы ⚠️';
-      out+='<div class="hist-entry '+cls+'">'
-        +'<div class="hist-left"><span class="hist-icon">'+icon+'</span><div><div class="hist-platform">'+pname+'</div>'
-        +(meta?'<div class="hist-meta">'+meta+'</div>':'')+'</div></div>'
-        +'<div class="hist-right"><span class="hist-amount '+cls+'">'+( r.salary||0).toLocaleString('ru-RU')+' ₽</span>'
-        +'<button class="hist-del" onclick="histDelete(\''+r.id+'\')">✕</button></div></div>';
+    document.querySelectorAll('input[type=number]').forEach(function(inp) {
+        inp.addEventListener('keydown', function(){ sfxType(); });
     });
-    out+='</div>';
-  });
-  list.innerHTML=out;
-}
 
-// ══════════════════════════════════════════════
-//  АНИМАЦИИ
-// ══════════════════════════════════════════════
-function animNum(el, target, dur, cb) {
-  var start = performance.now();
-  (function tick(now){
-    var p = Math.min((now-start)/dur,1), ease=1-Math.pow(1-p,3);
-    el.textContent = Math.round(ease*target).toLocaleString('ru-RU')+' ₽';
-    if(p<1) requestAnimationFrame(tick); else if(cb) cb();
-  })(performance.now());
-}
+    function goTo(screen) {
+        sfxClick();
+        document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+        document.getElementById('screen-' + screen).classList.add('active');
+        window.scrollTo(0,0);
+    }
 
-function typewriter(el, text, speed, cb) {
-  el.textContent=''; el.className=(el.className||'').replace(/typing|typed/g,'').trim()+' typing';
-  var i=0;
-  (function tick(){
-    if(i<=text.length){ el.textContent=text.slice(0,i++); setTimeout(tick,speed+Math.random()*18); }
-    else{ el.className=(el.className||'').replace('typing','').trim()+' typed'; if(cb) cb(); }
-  })();
-}
+    // ═══════════ TYPEWRITER & COUNTER ═══════════
+    function animateNumber(el, target, duration, onDone) {
+        duration = duration || 900;
+        var start = performance.now();
+        function update(time) {
+            var p = Math.min((time-start)/duration, 1);
+            var ease = 1 - Math.pow(1-p, 3);
+            el.textContent = Math.round(ease*target).toLocaleString('ru-RU') + ' ₽';
+            if (p < 1) { requestAnimationFrame(update); } else if (onDone) { onDone(); }
+        }
+        requestAnimationFrame(update);
+    }
 
-function spawnStars(container) {
-  var emojis=['⭐','✨','💛','🌟','💎','🎉'];
-  for(var i=0;i<16;i++){
-    (function(idx){
-      setTimeout(function(){
-        var el=document.createElement('span'); el.className='confetti-star';
-        el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
-        var tx=(Math.random()-.5)*300, ty=-(60+Math.random()*160), r=(Math.random()-.5)*720;
-        el.style.cssText='left:50%;top:50%;position:absolute;--tx:'+tx+'px;--ty:'+ty+'px;--r:'+r+'deg;';
-        container.appendChild(el);
-        setTimeout(function(){ el.remove(); },1300);
-      },idx*60);
-    })(i);
-  }
-}
-</script>
+    function typewriter(el, text, speed, onDone) {
+        speed = speed || 36;
+        el.textContent = '';
+        el.className = (el.className||'').replace(/typing|typed/g,'').trim() + ' typing';
+        var i = 0;
+        function tick() {
+            if (i <= text.length) {
+                el.textContent = text.slice(0,i); i++;
+                setTimeout(tick, speed + Math.random()*18);
+            } else {
+                el.className = (el.className||'').replace('typing','').trim() + ' typed';
+                if (onDone) onDone();
+            }
+        }
+        tick();
+    }
+
+    // ═══════════ CALCULATE ═══════════
+    function calcPlatform(p) {
+        sfxCalc();
+        var month = document.getElementById(p+'-month').value;
+        var tiers = [];
+
+        if (p === 'yt') {
+            var yp1 = parseFloat(document.getElementById('yt-t1-price').value)||0;
+            var yp2 = parseFloat(document.getElementById('yt-t2-price').value)||0;
+            var ypp = parseFloat(document.getElementById('yt-tp-price').value)||0;
+            var ytpCount = parseInt(document.getElementById('yt-tp-count').value)||0;
+            // Обычные тиры — накопительная цена
+            // Премиум — считаются как обычные 50к+ (yp1+yp2) ПЛЮС бонус ypp сверху
+            tiers = [
+                { label: '5к+ просм.',    count: parseInt(document.getElementById('yt-t1-count').value)||0, cumPrice: yp1 },
+                { label: '50к+ просм.',   count: parseInt(document.getElementById('yt-t2-count').value)||0, cumPrice: yp1+yp2 },
+                { label: '🏆 100к+ просм.',count: ytpCount, cumPrice: yp1+yp2+ypp, premium: true }
+            ];
+        } else {
+            var tp1 = parseFloat(document.getElementById('tt-t1-price').value)||0;
+            var tp2 = parseFloat(document.getElementById('tt-t2-price').value)||0;
+            var tp3 = parseFloat(document.getElementById('tt-t3-price').value)||0;
+            var tpp = parseFloat(document.getElementById('tt-tp-price').value)||0;
+            var ttpCount = parseInt(document.getElementById('tt-tp-count').value)||0;
+            tiers = [
+                { label: '10к+ просм.',   count: parseInt(document.getElementById('tt-t1-count').value)||0, cumPrice: tp1 },
+                { label: '50к+ просм.',   count: parseInt(document.getElementById('tt-t2-count').value)||0, cumPrice: tp1+tp2 },
+                { label: '100к+ просм.',  count: parseInt(document.getElementById('tt-t3-count').value)||0, cumPrice: tp1+tp2+tp3 },
+                { label: '🏆 500к+ просм.',count: ttpCount, cumPrice: tp1+tp2+tp3+tpp, premium: true }
+            ];
+        }
+
+        var totalVideos = tiers.reduce(function(a,t){ return a+t.count; }, 0);
+        var salary = tiers.reduce(function(a,t){ return a+(t.count*t.cumPrice); }, 0);
+        tiers.forEach(function(t){ t.total = t.count * t.cumPrice; });
+
+        var totalInput = parseInt(document.getElementById(p+'-total-videos').value) || 0;
+        var missed = Math.max(0, totalInput - totalVideos);
+
+        state[p] = { salary: salary, month: month, totalVideos: totalVideos, totalInput: totalInput, missed: missed, tiers: tiers };
+        showResultOverlay(p, salary, month, totalVideos, tiers, missed);
+        updateHomeStatus();
+    }
+
+    // ═══════════ OVERLAY ═══════════
+    var overlayCurrentPlatform = null;
+
+    function showResultOverlay(p, salary, month, totalVideos, tiers, missed) {
+        overlayCurrentPlatform = p;
+        var overlay   = document.getElementById('result-overlay');
+        var badge     = document.getElementById('ov-badge');
+        var labelEl   = document.getElementById('ov-label-tw');
+        var amountEl  = document.getElementById('ov-amount');
+        var subEl     = document.getElementById('ov-sub-tw');
+        var bd        = document.getElementById('ov-breakdown');
+        var nextBtn   = document.getElementById('ov-next-btn');
+        var nextLabel = document.getElementById('ov-next-label');
+
+        labelEl.textContent=''; labelEl.className='';
+        subEl.textContent='';   subEl.className='';
+        amountEl.textContent='0 ₽';
+        bd.innerHTML='';
+        nextBtn.classList.remove('reveal');
+        var _om = document.getElementById('ov-missed'); if(_om){_om.innerHTML='';_om.style.opacity='0';}
+
+        badge.textContent = (p==='yt') ? '▶️ YouTube' : '🎵 TikTok';
+        // If both already done → always go to total
+            if (state.yt !== null && state.tt !== null) {
+                nextLabel.textContent = 'Далее → Полная сумма 💎';
+            } else if (p === 'yt') {
+                nextLabel.textContent = 'Далее → TikTok 🎵';
+            } else {
+                nextLabel.textContent = state.yt === null ? 'Далее → YouTube ▶️' : 'Далее → Полная сумма 💎';
+            }
+
+        overlay.classList.add('visible');
+        document.body.style.overflow = 'hidden';
+
+        setTimeout(function() {
+            typewriter(labelEl, 'Зарплата за ' + month, 38, function() {
+                sfxCountStart();
+                animateNumber(amountEl, salary, 900, function() {
+                    sfxCountStop();
+                    setTimeout(function() {
+                        typewriter(subEl, totalVideos + ' видео всего', 35, function() {
+                            // Animate chips one by one
+                            var chipClasses = ['chip-t1','chip-t2','chip-t3','chip-tp'];
+                            var activeTiers = tiers.filter(function(t){ return t.count > 0; });
+                            activeTiers.forEach(function(t,i){
+                                setTimeout(function(){
+                                    var c = document.createElement('span');
+                                    var cls = t.premium ? 'chip-tp' : chipClasses[i] || 'chip-t3';
+                                    c.className = 'chip ' + cls;
+                                    bd.appendChild(c);
+                                    typewriter(c, t.label + ': ' + t.total.toLocaleString('ru-RU') + ' ₽', 22);
+                                }, i * 380);
+                            });
+                            var revealDelay = Math.max(activeTiers.length * 380 + 400, 600);
+                            // Show missed count
+                            if (missed > 0) {
+                                setTimeout(function(){
+                                    var missedEl = document.getElementById('ov-missed');
+                                    if (missedEl) {
+                                        missedEl.innerHTML = '<span style="font-size:12px;color:#ff6584;background:rgba(255,101,132,0.1);border:1px solid rgba(255,101,132,0.25);padding:4px 12px;border-radius:20px;display:inline-block">⚠️ ' + missed + ' видео не набрали норму</span>';
+                                        missedEl.style.opacity = '1';
+                                        sfxError();
+                                    }
+                                }, revealDelay - 200);
+                            } else {
+                                var missedEl = document.getElementById('ov-missed');
+                                if (missedEl) missedEl.style.opacity = '0';
+                            }
+                            setTimeout(function(){
+                                nextBtn.classList.add('reveal');
+                                sfxClick();
+                            }, revealDelay);
+                        });
+                    }, 400);
+                });
+            });
+        }, 200);
+    }
+
+    function closeOverlay() {
+        document.getElementById('result-overlay').classList.remove('visible');
+        document.body.style.overflow = '';
+    }
+
+    function overlayNext() {
+        sfxClick();
+        var p = overlayCurrentPlatform;
+        closeOverlay();
+        if (p === 'yt') {
+            setTimeout(function(){
+                if (state.tt !== null) { showTotal(); } else { goTo('tt'); }
+            }, 350);
+        } else {
+            setTimeout(function(){
+                if (state.yt!==null && state.tt!==null) { showTotal(); }
+                else if (state.yt===null) { goTo('yt'); }
+                else { goTo('home'); }
+            }, 350);
+        }
+    }
+
+    // ═══════════ HOME STATUS ═══════════
+    function updateHomeStatus() {
+        if (state.yt!==null) document.getElementById('yt-status').textContent = state.yt.salary.toLocaleString('ru-RU') + ' ₽';
+        if (state.tt!==null) document.getElementById('tt-status').textContent = state.tt.salary.toLocaleString('ru-RU') + ' ₽';
+        if (state.yt!==null && state.tt!==null) {
+            var btn = document.getElementById('btn-see-total');
+            btn.style.display='block';
+            btn.style.animation='fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both';
+        }
+        if (state.yt!==null || state.tt!==null) {
+            var sb = document.getElementById('btn-stats');
+            if (sb) { sb.style.display='block'; sb.style.animation='fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.1s both'; }
+        }
+    }
+
+    // ═══════════ TOTAL SCREEN ═══════════
+    function spawnStars(container) {
+        var emojis=['⭐','✨','💛','🌟','💎','🎉'];
+        for (var i=0;i<16;i++) {
+            (function(idx){
+                setTimeout(function(){
+                    var el=document.createElement('span'); el.className='confetti-star';
+                    el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+                    var tx=(Math.random()-0.5)*300; var ty=-(60+Math.random()*160); var r=(Math.random()-0.5)*720;
+                    el.style.cssText='left:50%;top:50%;position:absolute;--tx:'+tx+'px;--ty:'+ty+'px;--r:'+r+'deg;';
+                    container.appendChild(el);
+                    setTimeout(function(){ el.remove(); },1300);
+                }, idx*60);
+            })(i);
+        }
+    }
+
+    function showTotal() {
+        sfxClick(); sfxTotal();
+        goTo('total');
+        var ytSal = state.yt ? state.yt.salary : 0;
+        var ttSal = state.tt ? state.tt.salary : 0;
+        var grand = ytSal + ttSal;
+        document.getElementById('total-yt-amount').textContent = state.yt ? state.yt.salary.toLocaleString('ru-RU')+' ₽' : '—';
+        document.getElementById('total-tt-amount').textContent = state.tt ? state.tt.salary.toLocaleString('ru-RU')+' ₽' : '—';
+        document.getElementById('total-sum').textContent='0 ₽';
+        ['total-row-yt','total-row-tt','total-sum'].forEach(function(id){ document.getElementById(id).classList.remove('show'); });
+        setTimeout(function(){ document.getElementById('total-row-yt').classList.add('show'); },100);
+        setTimeout(function(){ document.getElementById('total-row-tt').classList.add('show'); },300);
+        setTimeout(function(){
+            var sumEl=document.getElementById('total-sum');
+            sumEl.classList.add('show'); sfxCountStart();
+            animateNumber(sumEl, grand, 1200, function(){ sfxCountStop(); spawnStars(document.getElementById('total-card')); });
+        },700);
+    }
+
+    function spinInput(id, delta) {
+        sfxType();
+        var inp = document.getElementById(id);
+        if (!inp) return;
+        var val = parseFloat(inp.value) || 0;
+        var min = parseFloat(inp.min) || 0;
+        val = Math.max(min, val + delta);
+        inp.value = val;
+        // Trigger input event so live labels update
+        inp.dispatchEvent(new Event('input'));
+    }
+
+
+    // ═══════════ THEMES ═══════════
+    var currentTheme = localStorage.getItem('theme') || 'space';
+
+    function setTheme(name) {
+        sfxClick();
+        currentTheme = name;
+        document.documentElement.setAttribute('data-theme', name);
+        localStorage.setItem('theme', name);
+        // Update active swatch
+        document.querySelectorAll('.theme-swatch').forEach(function(s) {
+            s.classList.toggle('active', s.dataset.theme === name);
+        });
+    }
+
+    // Apply saved theme on load
+    setTheme(currentTheme);
+
+
+    // ═══════════ ANIMATION SETTINGS ═══════════
+    function updateSliderLabel(slider, valId, suffix) {
+        var val = parseFloat(slider.value);
+        var display = suffix === '%' ? Math.round(val) + '%' :
+                      suffix === '×' ? val.toFixed(1) + '×' :
+                      Math.round(val).toString();
+        document.getElementById(valId).textContent = display;
+        // Update slider fill
+        var min = parseFloat(slider.min), max = parseFloat(slider.max);
+        var pct = ((val - min) / (max - min) * 100).toFixed(1) + '%';
+        slider.style.setProperty('--pct', pct);
+    }
+
+    function applyAnimSettings() {
+        var orbsOn     = document.getElementById('toggle-orbs').checked;
+        var starsOn    = document.getElementById('toggle-stars').checked;
+        var gridOn     = document.getElementById('toggle-grid').checked;
+        var orbSpeed   = parseFloat(document.getElementById('range-orb-speed').value);
+        var orbBright  = parseFloat(document.getElementById('range-orb-intensity').value) / 100;
+        var starCount  = parseInt(document.getElementById('range-star-count').value);
+        var starSpeed  = parseFloat(document.getElementById('range-star-speed').value);
+
+        // Orbs
+        document.querySelectorAll('.bg-orb').forEach(function(orb) {
+            orb.style.display = orbsOn ? '' : 'none';
+            if (orbsOn) {
+                var dur = parseFloat(orb.style.animationDuration) || 12;
+                orb.style.animationDuration = (dur / orbSpeed) + 's';
+                orb.style.filter = 'blur(80px) brightness(' + orbBright * 2 + ')';
+                orb.style.opacity = orbBright;
+            }
+        });
+
+        // Apply orb speed via CSS custom property on each orb
+        var orbDurs = [12, 14, 16, 13];
+        document.querySelectorAll('.bg-orb').forEach(function(orb, i) {
+            orb.style.animationDuration = (orbDurs[i] / orbSpeed).toFixed(1) + 's';
+            orb.style.opacity = orbsOn ? (orbBright * 0.9) : 0;
+            orb.style.filter = 'blur(80px)';
+        });
+
+        // Grid shimmer
+        var afterEl = document.querySelector('body');
+        if (gridOn) {
+            document.documentElement.style.setProperty('--grid-anim', 'gridShimmer 6s ease-in-out infinite');
+        } else {
+            document.documentElement.style.setProperty('--grid-anim', 'none');
+        }
+        // Apply grid state via class
+        document.body.classList.toggle('no-grid-anim', !gridOn);
+
+        // Stars — rebuild
+        var field = document.getElementById('star-field');
+        if (field) {
+            field.innerHTML = '';
+            if (starsOn && starCount > 0) {
+                for (var i = 0; i < starCount; i++) {
+                    var s = document.createElement('div');
+                    s.className = 'shooting-star';
+                    var angle = 30 + Math.random() * 20;
+                    var dist  = 200 + Math.random() * 400;
+                    var sx = -Math.cos(angle * Math.PI/180) * dist;
+                    var sy =  Math.sin(angle * Math.PI/180) * dist;
+                    var baseDur = 4 + Math.random() * 6;
+                    s.style.cssText = [
+                        'left:' + (Math.random() * 110) + '%',
+                        'top:'  + (Math.random() * 80) + '%',
+                        '--sx:' + sx.toFixed(0) + 'px',
+                        '--sy:' + sy.toFixed(0) + 'px',
+                        '--sdur:' + (baseDur / starSpeed).toFixed(1) + 's',
+                        '--sdelay:' + (Math.random() * 10).toFixed(1) + 's'
+                    ].join(';');
+                    field.appendChild(s);
+                }
+            }
+        }
+
+        // Disable sliders if parent toggle is off
+        document.getElementById('slider-orb-speed').classList.toggle('disabled', !orbsOn);
+        document.getElementById('slider-orb-intensity').classList.toggle('disabled', !orbsOn);
+        document.getElementById('slider-star-count').classList.toggle('disabled', !starsOn);
+        document.getElementById('slider-star-speed').classList.toggle('disabled', !starsOn);
+
+        // Save
+        localStorage.setItem('animSettings', JSON.stringify({
+            orbsOn: orbsOn, starsOn: starsOn, gridOn: gridOn,
+            orbSpeed: orbSpeed, orbBright: orbBright * 100,
+            starCount: starCount, starSpeed: starSpeed
+        }));
+    }
+
+    function loadAnimSettings() {
+        try {
+            var s = JSON.parse(localStorage.getItem('animSettings'));
+            if (!s) return;
+            document.getElementById('toggle-orbs').checked  = s.orbsOn !== false;
+            document.getElementById('toggle-stars').checked = s.starsOn !== false;
+            document.getElementById('toggle-grid').checked  = s.gridOn !== false;
+            if (s.orbSpeed)   { document.getElementById('range-orb-speed').value   = s.orbSpeed;    updateSliderLabel(document.getElementById('range-orb-speed'),   'val-orb-speed',   '×'); }
+            if (s.orbBright)  { document.getElementById('range-orb-intensity').value= s.orbBright;   updateSliderLabel(document.getElementById('range-orb-intensity'),'val-orb-intensity','%'); }
+            if (s.starCount !== undefined) { document.getElementById('range-star-count').value = s.starCount; updateSliderLabel(document.getElementById('range-star-count'), 'val-star-count', ''); }
+            if (s.starSpeed)  { document.getElementById('range-star-speed').value  = s.starSpeed;   updateSliderLabel(document.getElementById('range-star-speed'),  'val-star-speed',  '×'); }
+            applyAnimSettings();
+        } catch(e) {}
+    }
+
+    // Init sliders fill on load
+    ['range-orb-speed','range-orb-intensity','range-star-count','range-star-speed'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var min = parseFloat(el.min), max = parseFloat(el.max), val = parseFloat(el.value);
+        el.style.setProperty('--pct', ((val-min)/(max-min)*100).toFixed(1)+'%');
+    });
+
+    loadAnimSettings();
+
+
+    // ═══════════ STATS ═══════════
+    function renderStats() {
+        var el = document.getElementById('stats-content');
+        if (!el) return;
+        if (!state.yt && !state.tt) return;
+
+        var html = '';
+
+        function platformSection(p, icon, name, colorClass) {
+            var s = state[p];
+            if (!s) return '';
+            var totalInput = s.totalInput || 0;
+            var counted    = s.totalVideos || 0;
+            var missed     = s.missed || 0;
+            var pct        = totalInput > 0 ? Math.round(counted / totalInput * 100) : 100;
+            var tierColors = ['t1','t2','t3','tp'];
+
+            var sec = '<div class="stats-platform-section">';
+            sec += '<div class="stats-platform-header">';
+            sec += '<span class="stats-platform-icon">' + icon + '</span>';
+            sec += '<span class="stats-platform-name">' + name + '</span>';
+            sec += '<span class="stats-platform-total">' + s.salary.toLocaleString('ru-RU') + ' ₽</span>';
+            sec += '</div>';
+
+            // Big number cards
+            sec += '<div class="stats-nums">';
+            sec += '<div class="stats-num-card"><div class="stats-num-val">' + (totalInput||counted) + '</div><div class="stats-num-label">Всего видео</div></div>';
+            sec += '<div class="stats-num-card"><div class="stats-num-val">' + counted + '</div><div class="stats-num-label">С просмотрами</div></div>';
+            sec += '<div class="stats-num-card"><div class="stats-num-val" style="color:' + (missed>0?'#ff6584':'#43e97b') + '">' + missed + '</div><div class="stats-num-label">Без нормы</div></div>';
+            sec += '</div>';
+
+            // Percent ring
+            var r = 28, circ = 2 * Math.PI * r;
+            var dash = (pct / 100 * circ).toFixed(1);
+            sec += '<div class="stats-ring-row">';
+            sec += '<svg class="ring-svg" width="72" height="72" viewBox="0 0 72 72">';
+            sec += '<circle cx="36" cy="36" r="' + r + '" fill="none" stroke="var(--surface)" stroke-width="6"/>';
+            sec += '<circle cx="36" cy="36" r="' + r + '" fill="none" stroke="var(--accent)" stroke-width="6"';
+            sec += ' stroke-dasharray="' + dash + ' ' + circ.toFixed(1) + '"';
+            sec += ' stroke-dashoffset="' + (circ/4).toFixed(1) + '"';
+            sec += ' stroke-linecap="round" style="transition:stroke-dasharray 1s cubic-bezier(0.16,1,0.3,1)"/>';
+            sec += '<text x="36" y="40" text-anchor="middle" font-size="14" font-weight="700" fill="var(--accent)" font-family="Unbounded,sans-serif">' + pct + '%</text>';
+            sec += '</svg>';
+            sec += '<div class="ring-info"><div class="ring-pct">' + counted + ' / ' + (totalInput||counted) + '</div>';
+            sec += '<div class="ring-desc">видео выполнили норму</div></div>';
+            sec += '</div>';
+
+            // Missed badge
+            if (missed > 0) {
+                sec += '<div class="missed-badge"><span class="missed-badge-icon">⚠️</span>';
+                sec += '<div class="missed-badge-text"><span>' + missed + ' видео</span> не набрали минимальный порог просмотров</div></div>';
+            } else if (totalInput > 0) {
+                sec += '<div class="missed-badge none"><span class="missed-badge-icon">✅</span>';
+                sec += '<div class="missed-badge-text"><span>Все видео</span> набрали норму!</div></div>';
+            }
+
+            // Tier bar chart
+            var maxCount = Math.max(1, totalInput || counted);
+            sec += '<div class="tier-bars">';
+            s.tiers.forEach(function(t, i) {
+                if (!t.label) return;
+                var fillPct = Math.round(t.count / maxCount * 100);
+                var displayLabel = t.label;
+                var displayTotal = t.total;
+                var clr = t.premium ? 'tp' : (tierColors[i] || 't1');
+                sec += '<div class="tier-bar-row">';
+                sec += '<div class="tier-bar-header">';
+                sec += '<span class="tier-bar-label">' + displayLabel + '</span>';
+                sec += '<span class="tier-bar-info">' + t.count + ' вид. · ' + t.total.toLocaleString('ru-RU') + ' ₽</span>';
+                sec += '</div>';
+                sec += '<div class="tier-bar-track"><div class="tier-bar-fill ' + clr + '" style="width:' + fillPct + '%"></div></div>';
+                sec += '</div>';
+            });
+            // Missed bar
+            if (missed > 0) {
+                var missedPct = Math.round(missed / maxCount * 100);
+                sec += '<div class="tier-bar-row">';
+                sec += '<div class="tier-bar-header">';
+                sec += '<span class="tier-bar-label" style="color:#ff6584">Без нормы</span>';
+                sec += '<span class="tier-bar-info" style="color:#ff6584">' + missed + ' вид. · 0 ₽</span>';
+                sec += '</div>';
+                sec += '<div class="tier-bar-track"><div class="tier-bar-fill missed" style="width:' + missedPct + '%"></div></div>';
+                sec += '</div>';
+            }
+            sec += '</div>';
+            sec += '</div>';
+            return sec;
+        }
+
+        if (state.yt) html += platformSection('yt','▶️','YouTube');
+        if (state.yt && state.tt) html += '<div class="stats-section-divider"></div>';
+        if (state.tt) html += platformSection('tt','🎵','TikTok');
+
+        el.innerHTML = html;
+    }
+
+    // Hook goTo to render stats when navigating there
+    var _origGoTo = goTo;
+    goTo = function(screen) {
+        _origGoTo(screen);
+        if (screen === 'stats') setTimeout(renderStats, 80);
+    };
+
+
+    // ═══════════ HISTORY ═══════════
+    var HIST_KEY = 'salary-hist-v2';
+
+    function histLoad() {
+        try { return JSON.parse(localStorage.getItem(HIST_KEY)) || []; } catch(e) { return []; }
+    }
+    function histSave(arr) {
+        try { localStorage.setItem(HIST_KEY, JSON.stringify(arr)); } catch(e) {}
+    }
+    function histAdd(record) {
+        var arr = histLoad();
+        record.id = Date.now() + '_' + Math.random().toString(36).slice(2);
+        arr.unshift(record);
+        histSave(arr);
+    }
+    function histDelete(id) {
+        var arr = histLoad().filter(function(r){ return r.id !== id; });
+        histSave(arr);
+        renderHistory();
+    }
+    function confirmClearHistory() {
+        sfxClick();
+        if (confirm('Очистить всю историю?')) { histSave([]); renderHistory(); }
+    }
+
+    function renderHistory() {
+        var list = document.getElementById('history-list');
+        if (!list) return;
+        var records = histLoad();
+        if (!records.length) {
+            list.innerHTML = ["<div class=\"history-empty\">","<div style=\"font-size:48px;margin-bottom:12px\">📭</div>","<div style=\"font-size:13px;color:var(--muted);font-weight:600\">История пуста</div>","<div style=\"font-size:12px;color:var(--muted);margin-top:6px\">Рассчитай зарплату — она появится здесь</div>","</div>"].join("");
+            return;
+        }
+        // Group by month
+        var groups = {}, order = [];
+        records.forEach(function(r){
+            var k = r.month || '—';
+            if (!groups[k]) { groups[k]=[]; order.push(k); }
+            groups[k].push(r);
+        });
+        // Total stats
+        var combined = records.filter(function(r){ return r.platform==='combined'; });
+        var totalEarned = combined.reduce(function(a,r){ return a+(r.salary||0); },0);
+        var out = '<div class="hist-stats-row">';
+        out += '<div class="hist-stat-card"><div class="hist-stat-val">' + totalEarned.toLocaleString('ru-RU') + ' ₽</div><div class="hist-stat-label">Заработано</div></div>';
+        out += '<div class="hist-stat-card"><div class="hist-stat-val">' + combined.length + '</div><div class="hist-stat-label">Месяцев</div></div>';
+        var best = combined.reduce(function(a,r){ return Math.max(a,r.salary||0); },0);
+        out += '<div class="hist-stat-card"><div class="hist-stat-val">' + (best||0).toLocaleString('ru-RU') + ' ₽</div><div class="hist-stat-label">Лучший месяц</div></div>';
+        out += '</div>';
+
+        order.forEach(function(month){
+            var recs = groups[month];
+            var monthTotal = recs.filter(function(r){ return r.platform==='combined'; }).reduce(function(a,r){ return a+(r.salary||0); },0);
+            if (!monthTotal) monthTotal = recs.reduce(function(a,r){ return a+(r.salary||0); },0);
+            out += '<div class="hist-group">';
+            out += '<div class="hist-group-header"><span class="hist-group-month">' + month + '</span><span class="hist-group-total">' + monthTotal.toLocaleString('ru-RU') + ' ₽</span></div>';
+            recs.forEach(function(r){
+                var isComb = r.platform==='combined';
+                var isYt   = r.platform==='yt';
+                var cls    = isComb ? 'h-combined' : (isYt ? 'h-yt' : 'h-tt');
+                var icon   = isComb ? '💎' : (isYt ? '▶️' : '🎵');
+                var pname  = isComb ? 'Итого' : (isYt ? 'YouTube' : 'TikTok');
+                var meta   = '';
+                if (r.totalVideos !== undefined) meta += r.totalVideos + ' вид. с нормой';
+                if (r.missed > 0) meta += (meta?' · ':'') + r.missed + ' без нормы ⚠️';
+                out += '<div class="hist-entry ' + cls + '">';
+                out += '<div class="hist-left"><span class="hist-icon">' + icon + '</span><div><div class="hist-platform">' + pname + '</div>';
+                if (meta) out += '<div class="hist-meta">' + meta + '</div>';
+                out += '</div></div>';
+                out += '<div class="hist-right"><span class="hist-amount ' + cls + '">' + (r.salary||0).toLocaleString('ru-RU') + ' ₽</span>';
+                out += '<button class="hist-del" onclick="sfxClick();histDelete(\'' + r.id + '\')">✕</button>';
+                out += '</div></div>';
+            });
+            out += '</div>';
+        });
+        list.innerHTML = out;
+    }
+
+    // Auto-save to history when total is shown
+    var _origShowTotal = showTotal;
+    showTotal = function() {
+        _origShowTotal();
+        var ytSal = state.yt ? state.yt.salary : 0;
+        var ttSal = state.tt ? state.tt.salary : 0;
+        var grand = ytSal + ttSal;
+        var month = (state.yt||state.tt||{}).month || months[new Date().getMonth()];
+        var toSave = [];
+        if (state.yt) toSave.push({ platform:'yt', salary:state.yt.salary, month:state.yt.month, totalVideos:state.yt.totalVideos, missed:state.yt.missed });
+        if (state.tt) toSave.push({ platform:'tt', salary:state.tt.salary, month:state.tt.month, totalVideos:state.tt.totalVideos, missed:state.tt.missed });
+        toSave.push({ platform:'combined', salary:grand, month:month });
+        toSave.forEach(function(r){ histAdd(r); });
+    };
+
+    // Hook goTo for history
+    var _g2 = goTo;
+    goTo = function(screen) {
+        _g2(screen);
+        if (screen === 'history') setTimeout(renderHistory, 80);
+    };
+
+    // ═══════════ STATS ANIMATIONS ═══════════
+    var _origRenderStats = renderStats;
+    renderStats = function() {
+        _origRenderStats();
+        // Animate ring circles
+        setTimeout(function() {
+            document.querySelectorAll('#stats-content circle[stroke="var(--accent)"]').forEach(function(c){
+                var final = c.getAttribute('stroke-dasharray');
+                c.setAttribute('stroke-dasharray', '0 999');
+                setTimeout(function(){ c.setAttribute('stroke-dasharray', final); }, 50);
+            });
+            // Animate bars from 0 to their width
+            document.querySelectorAll('.tier-bar-fill').forEach(function(bar, i){
+                var targetW = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(function(){ bar.style.width = targetW; }, 100 + i * 80);
+            });
+            // Animate stat number cards
+            document.querySelectorAll('.stats-num-val').forEach(function(el, i){
+                var target = parseFloat(el.textContent.replace(/[^0-9]/g,'')) || 0;
+                var isRub = el.textContent.indexOf('₽') !== -1;
+                el.textContent = isRub ? '0 ₽' : '0';
+                setTimeout(function(){
+                    var start = performance.now();
+                    var dur = 700 + i * 100;
+                    function tick(now) {
+                        var p = Math.min((now-start)/dur, 1);
+                        var ease = 1 - Math.pow(1-p, 3);
+                        var val = Math.round(ease * target);
+                        el.textContent = isRub ? val.toLocaleString('ru-RU') + ' ₽' : val.toString();
+                        if (p < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                }, 200 + i * 120);
+            });
+            // Stagger platform section entries
+            document.querySelectorAll('.stats-platform-section').forEach(function(sec, i){
+                sec.style.opacity = '0';
+                sec.style.transform = 'translateY(20px)';
+                sec.style.transition = 'opacity 0.5s, transform 0.5s';
+                setTimeout(function(){ sec.style.opacity = '1'; sec.style.transform = 'translateY(0)'; }, i * 200);
+            });
+        }, 60);
+    };
+
+    </script>
+
+    <!-- SETTINGS / THEMES -->
+    <div class="screen" id="screen-settings">
+        <div class="card">
+            <div class="calc-header">
+                <div class="back-btn" onclick="goTo('home')">←</div>
+                <div class="calc-header-info">
+                    <div class="calc-platform-badge">⚙️ Настройки</div>
+                    <div class="calc-sub">Выбери тему оформления</div>
+                </div>
+            </div>
+
+            <div class="section-title">Тема</div>
+            <div class="theme-grid" id="theme-grid">
+                <div class="theme-swatch sw-space active" data-theme="space" onclick="setTheme('space')">
+                    <div class="ts-dots">
+                        <div class="ts-dot" style="background:#6c63ff"></div>
+                        <div class="ts-dot" style="background:#ff6584"></div>
+                        <div class="ts-dot" style="background:#43e97b"></div>
+                    </div>
+                    <div class="ts-name">Space</div>
+                    <div class="ts-check">✓</div>
+                </div>
+                <div class="theme-swatch sw-sunset" data-theme="sunset" onclick="setTheme('sunset')">
+                    <div class="ts-dots">
+                        <div class="ts-dot" style="background:#ff6b35"></div>
+                        <div class="ts-dot" style="background:#ff9500"></div>
+                        <div class="ts-dot" style="background:#ffcc02"></div>
+                    </div>
+                    <div class="ts-name">Sunset</div>
+                    <div class="ts-check">✓</div>
+                </div>
+                <div class="theme-swatch sw-ocean" data-theme="ocean" onclick="setTheme('ocean')">
+                    <div class="ts-dots">
+                        <div class="ts-dot" style="background:#00b4d8"></div>
+                        <div class="ts-dot" style="background:#0077b6"></div>
+                        <div class="ts-dot" style="background:#90e0ef"></div>
+                    </div>
+                    <div class="ts-name">Ocean</div>
+                    <div class="ts-check">✓</div>
+                </div>
+                <div class="theme-swatch sw-forest" data-theme="forest" onclick="setTheme('forest')">
+                    <div class="ts-dots">
+                        <div class="ts-dot" style="background:#2ecc71"></div>
+                        <div class="ts-dot" style="background:#27ae60"></div>
+                        <div class="ts-dot" style="background:#a8e6cf"></div>
+                    </div>
+                    <div class="ts-name">Forest</div>
+                    <div class="ts-check">✓</div>
+                </div>
+                <div class="theme-swatch sw-rose" data-theme="rose" onclick="setTheme('rose')">
+                    <div class="ts-dots">
+                        <div class="ts-dot" style="background:#e91e8c"></div>
+                        <div class="ts-dot" style="background:#ff6eb4"></div>
+                        <div class="ts-dot" style="background:#ffd6ec"></div>
+                    </div>
+                    <div class="ts-name">Rose</div>
+                    <div class="ts-check">✓</div>
+                </div>
+                <div class="theme-swatch sw-gold" data-theme="gold" onclick="setTheme('gold')">
+                    <div class="ts-dots">
+                        <div class="ts-dot" style="background:#f4c400"></div>
+                        <div class="ts-dot" style="background:#ff8c00"></div>
+                        <div class="ts-dot" style="background:#fff0a0"></div>
+                    </div>
+                    <div class="ts-name">Gold</div>
+                    <div class="ts-check">✓</div>
+                </div>
+            </div>
+
+            <div class="section-title" style="margin-top:28px">Предпросмотр</div>
+            <div id="theme-preview" style="background:var(--surface2);border:1px solid var(--border);border-radius:16px;padding:20px;text-align:center;transition:all 0.4s">
+                <div style="font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;color:var(--accent);margin-bottom:8px">Акцентный цвет</div>
+                <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Вспомогательный текст</div>
+                <div style="display:flex;gap:8px;justify-content:center">
+                    <span style="padding:4px 12px;border-radius:20px;background:rgba(108,99,255,0.15);color:var(--accent);border:1px solid var(--border);font-size:12px">Тег 1</span>
+                    <span style="padding:4px 12px;border-radius:20px;background:rgba(255,101,132,0.1);color:var(--accent2);border:1px solid var(--border);font-size:12px">Тег 2</span>
+                    <span style="padding:4px 12px;border-radius:20px;background:rgba(67,233,123,0.1);color:var(--accent3);border:1px solid var(--border);font-size:12px">Тег 3</span>
+                </div>
+
+            <div class="section-title" style="margin-top:28px">Анимации фона</div>
+            <div class="anim-settings">
+                <div class="anim-row">
+                    <div class="anim-row-left">
+                        <div class="anim-row-icon">🔮</div>
+                        <div class="anim-row-info">
+                            <div class="anim-row-label">Светящиеся орбы</div>
+                            <div class="anim-row-desc">Плавающие цветные пятна</div>
+                        </div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="toggle-orbs" checked onchange="applyAnimSettings()">
+                        <div class="toggle-track"></div>
+                    </label>
+                </div>
+                <div class="anim-row">
+                    <div class="anim-row-left">
+                        <div class="anim-row-icon">🌠</div>
+                        <div class="anim-row-info">
+                            <div class="anim-row-label">Падающие звёзды</div>
+                            <div class="anim-row-desc">Летящие частицы</div>
+                        </div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="toggle-stars" checked onchange="applyAnimSettings()">
+                        <div class="toggle-track"></div>
+                    </label>
+                </div>
+                <div class="anim-row">
+                    <div class="anim-row-left">
+                        <div class="anim-row-icon">✦</div>
+                        <div class="anim-row-info">
+                            <div class="anim-row-label">Мерцание сетки</div>
+                            <div class="anim-row-desc">Пульсация фоновой решётки</div>
+                        </div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="toggle-grid" checked onchange="applyAnimSettings()">
+                        <div class="toggle-track"></div>
+                    </label>
+                </div>
+                <div class="anim-slider-row" id="slider-orb-speed">
+                    <div class="anim-slider-header">
+                        <div class="anim-slider-label">🔮 Скорость орбов</div>
+                        <div class="anim-slider-val" id="val-orb-speed">1.0×</div>
+                    </div>
+                    <input type="range" class="anim-slider" id="range-orb-speed" min="0.3" max="3" step="0.1" value="1" oninput="updateSliderLabel(this,'val-orb-speed','×');applyAnimSettings()">
+                </div>
+                <div class="anim-slider-row" id="slider-orb-intensity">
+                    <div class="anim-slider-header">
+                        <div class="anim-slider-label">💡 Яркость орбов</div>
+                        <div class="anim-slider-val" id="val-orb-intensity">50%</div>
+                    </div>
+                    <input type="range" class="anim-slider" id="range-orb-intensity" min="10" max="100" step="5" value="50" oninput="updateSliderLabel(this,'val-orb-intensity','%');applyAnimSettings()">
+                </div>
+                <div class="anim-slider-row" id="slider-star-count">
+                    <div class="anim-slider-header">
+                        <div class="anim-slider-label">🌠 Кол-во звёзд</div>
+                        <div class="anim-slider-val" id="val-star-count">16</div>
+                    </div>
+                    <input type="range" class="anim-slider" id="range-star-count" min="0" max="40" step="4" value="16" oninput="updateSliderLabel(this,'val-star-count','');applyAnimSettings()">
+                </div>
+                <div class="anim-slider-row" id="slider-star-speed">
+                    <div class="anim-slider-header">
+                        <div class="anim-slider-label">⚡ Скорость звёзд</div>
+                        <div class="anim-slider-val" id="val-star-speed">1.0×</div>
+                    </div>
+                    <input type="range" class="anim-slider" id="range-star-speed" min="0.3" max="3" step="0.1" value="1" oninput="updateSliderLabel(this,'val-star-speed','×');applyAnimSettings()">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="screen" id="screen-stats">
+        <div class="card">
+            <div class="calc-header">
+                <div class="back-btn" onclick="goTo('home')">←</div>
+                <div class="calc-header-info">
+                    <div class="calc-platform-badge">📊 Статистика</div>
+                    <div class="calc-sub">Детальный разбор по платформам</div>
+                </div>
+            </div>
+            <div id="stats-content">
+                <div style="text-align:center;padding:40px 0;color:var(--muted)">
+                    Сначала рассчитай хотя бы одну платформу
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="screen" id="screen-history">
+        <div class="card">
+            <div class="calc-header">
+                <div class="back-btn" onclick="goTo('home')">←</div>
+                <div class="calc-header-info">
+                    <div class="calc-platform-badge">📋 История</div>
+                    <div class="calc-sub">Сохранённые расчёты</div>
+                </div>
+                <div class="back-btn" onclick="confirmClearHistory()" style="color:#ff6584;border-color:rgba(255,101,132,0.2)" title="Очистить всё">🗑</div>
+            </div>
+            <div id="history-list"></div>
+        </div>
+    </div>
 </body>
 </html>
