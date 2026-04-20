@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Калькулятор зарплаты</title>
     <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
@@ -1425,19 +1428,46 @@
     <script>
 
     // ═══════════ MAINTENANCE CHECK ═══════════
-    (function() {
+    function showMaintenance() {
+        var overlay = document.getElementById('maintenance-overlay');
+        if (overlay) overlay.classList.remove('hidden');
+        document.querySelectorAll('.screen,.bg-orb,.star-field').forEach(function(s){
+            s.style.display = 'none';
+        });
+    }
+
+    function checkMaintenance() {
+        // 1. Check URL param (works when opened via bot button)
         var params = new URLSearchParams(window.location.search);
-        var tgData = '';
-        try { tgData = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp.initData : ''; } catch(e) {}
-        // Check URL param or localStorage flag set by bot
-        var isMaintenance = params.get('maintenance') === '1' || localStorage.getItem('maintenance') === '1';
-        if (isMaintenance) {
-            var overlay = document.getElementById('maintenance-overlay');
-            if (overlay) overlay.classList.remove('hidden');
-            // Hide all screens
-            document.querySelectorAll('.screen').forEach(function(s){ s.style.display='none'; });
+        if (params.get('maintenance') === '1') {
+            showMaintenance();
+            return;
         }
-    })();
+        // 2. Check Telegram WebApp startParam
+        try {
+            var tg = window.Telegram && window.Telegram.WebApp;
+            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param === 'maintenance') {
+                showMaintenance();
+                return;
+            }
+        } catch(e) {}
+        // 3. Fetch status.json from GitHub Pages (most reliable)
+        fetch('/salary-calculator/status.json?t=' + Date.now())
+            .then(function(r){ return r.json(); })
+            .then(function(data){
+                if (data && data.maintenance === true) {
+                    showMaintenance();
+                }
+            })
+            .catch(function(){});
+    }
+
+    // Run after DOM ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', checkMaintenance);
+    } else {
+        checkMaintenance();
+    }
 
     // Generate shooting stars
     (function() {
