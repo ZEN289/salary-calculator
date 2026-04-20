@@ -1027,9 +1027,43 @@
             transform: translateX(20px); background: #fff;
         }
         .tier-card.t-premium .premium-check-row { border-top-color: rgba(255,215,0,0.2); }
+
+        /* ── MAINTENANCE ── */
+        .maintenance-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--bg);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center; padding: 32px;
+        }
+        .maintenance-overlay.hidden { display: none; }
+        .maint-icon { font-size: 64px; margin-bottom: 24px; animation: maintSpin 3s ease-in-out infinite; }
+        @keyframes maintSpin {
+            0%,100% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(15deg) scale(1.1); }
+        }
+        .maint-title {
+            font-family: 'Unbounded', sans-serif; font-size: 20px; font-weight: 700;
+            color: var(--text); margin-bottom: 12px;
+        }
+        .maint-sub { font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 280px; }
+        .maint-badge {
+            margin-top: 24px; padding: 8px 20px;
+            background: rgba(255,101,132,0.1); border: 1px solid rgba(255,101,132,0.3);
+            border-radius: 20px; font-size: 12px; color: var(--accent2);
+            font-family: 'Unbounded', sans-serif; letter-spacing: 0.08em;
+        }
     </style>
 </head>
 <body>
+
+    <!-- MAINTENANCE OVERLAY -->
+    <div class="maintenance-overlay hidden" id="maintenance-overlay">
+        <div class="maint-icon">🔧</div>
+        <div class="maint-title">Технические работы</div>
+        <div class="maint-sub">Калькулятор временно недоступен.<br>Попробуй немного позже!</div>
+        <div class="maint-badge">⏳ Скоро вернёмся</div>
+    </div>
 
     <!-- Animated Background -->
     <div class="bg-orb bg-orb-1"></div>
@@ -1165,35 +1199,28 @@
                     </div>
                     </div>
                 </div>
-                <!-- Premium -->
-                <div class="tier-card t-premium">
+                <!-- Premium checkbox -->
+                <div class="tier-card t-premium" style="cursor:pointer" onclick="document.getElementById('yt-premium-check').click()">
                     <div class="tier-left">
-                        <div class="tier-threshold-wrap"><span class="tier-threshold-prefix" style="font-size:12px">🏆</span><div class="threshold-wrap">
-                <input type="number" class="tier-threshold-input" id="yt-tp-threshold" value="100000" min="0">
-                <div class="spin-btns">
-                    <div class="spin-btn" onclick="spinInput('yt-tp-threshold',10000)">▲</div>
-                    <div class="spin-btn" onclick="spinInput('yt-tp-threshold',-10000)">▼</div>
-                </div>
-            </div><span class="tier-threshold-suffix">просм.</span></div>
-                        <div class="tier-price">🏆 Бонус: <span id="yt-tp-price-show">2 500 ₽</span> / видео</div>
-                        <div class="tier-price" style="font-size:11px;color:var(--muted);margin-top:3px">Прибавляется к обычной сумме</div>
-                    </div>
-                    <div class="tier-right">
-                        <div class="tier-count-label">Кол-во видео</div>
-                        <div class="tier-input-wrap">
-                        <input type="number" class="tier-input" id="yt-tp-count" min="0" placeholder="0">
-                        <div class="spin-btns">
-                            <div class="spin-btn" onclick="spinInput('yt-tp-count',1)">▲</div>
-                            <div class="spin-btn" onclick="spinInput('yt-tp-count',-1)">▼</div>
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                            <span style="font-size:18px">🏆</span>
+                            <span style="font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;color:#ffd700">Премия за 100к+</span>
                         </div>
+                        <div class="tier-price">+<span id="yt-tp-price-show">2 500 ₽</span> к итоговой сумме</div>
+                        <div style="font-size:10px;color:var(--muted);margin-top:4px">Один раз, если есть видео с 100к+</div>
                     </div>
+                    <div class="tier-right" style="flex-direction:row;align-items:center;gap:10px">
                         <div class="price-wrap">
-                        <input type="number" class="tier-price-edit" id="yt-tp-price" value="2500" min="0" title="Цена за видео">
-                        <div class="spin-btns">
-                            <div class="spin-btn" onclick="spinInput('yt-tp-price',50)">▲</div>
-                            <div class="spin-btn" onclick="spinInput('yt-tp-price',-50)">▼</div>
+                            <input type="number" class="tier-price-edit" id="yt-tp-price" value="2500" min="0" title="Сумма премии" onclick="event.stopPropagation()">
+                            <div class="spin-btns">
+                                <div class="spin-btn" onclick="event.stopPropagation();spinInput('yt-tp-price',50)">▲</div>
+                                <div class="spin-btn" onclick="event.stopPropagation();spinInput('yt-tp-price',-50)">▼</div>
+                            </div>
                         </div>
-                    </div>
+                        <label class="prem-toggle" onclick="event.stopPropagation()">
+                            <input type="checkbox" id="yt-premium-check">
+                            <div class="prem-toggle-track"></div>
+                        </label>
                     </div>
                 </div>
             </div>
@@ -1325,35 +1352,30 @@
                     </div>
                     </div>
                 </div>
-                <!-- Premium -->
-                <div class="tier-card t-premium">
+                <!-- Premium checkbox -->
+                <div class="tier-card t-premium" style="cursor:pointer" onclick="document.getElementById('tt-premium-check').click()">
                     <div class="tier-left">
-                        <div class="tier-threshold-wrap"><span class="tier-threshold-prefix" style="font-size:12px">🏆</span><div class="threshold-wrap">
-                <input type="number" class="tier-threshold-input" id="tt-tp-threshold" value="500000" min="0">
-                <div class="spin-btns">
-                    <div class="spin-btn" onclick="spinInput('tt-tp-threshold',50000)">▲</div>
-                    <div class="spin-btn" onclick="spinInput('tt-tp-threshold',-50000)">▼</div>
-                </div>
-            </div><span class="tier-threshold-suffix">просм.</span></div>
-                        <div class="tier-price">🏆 Бонус: <span id="tt-tp-price-show">2 000 ₽</span> / видео</div>
-                    </div>
-                    <div class="tier-right">
-                        <div class="tier-count-label">Кол-во видео</div>
-                        <div class="tier-input-wrap">
-                        <input type="number" class="tier-input" id="tt-tp-count" min="0" placeholder="0">
-                        <div class="spin-btns">
-                            <div class="spin-btn" onclick="spinInput('tt-tp-count',1)">▲</div>
-                            <div class="spin-btn" onclick="spinInput('tt-tp-count',-1)">▼</div>
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                            <span style="font-size:18px">🏆</span>
+                            <span style="font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;color:#ffd700">Премия за 500к+</span>
                         </div>
+                        <div class="tier-price">+<span id="tt-tp-price-show">2 000 ₽</span> к итоговой сумме</div>
+                        <div style="font-size:10px;color:var(--muted);margin-top:4px">Один раз, если есть видео с 500к+</div>
                     </div>
+                    <div class="tier-right" style="flex-direction:row;align-items:center;gap:10px">
                         <div class="price-wrap">
-                        <input type="number" class="tier-price-edit" id="tt-tp-price" value="2000" min="0" title="Цена за видео">
-                        <div class="spin-btns">
-                            <div class="spin-btn" onclick="spinInput('tt-tp-price',50)">▲</div>
-                            <div class="spin-btn" onclick="spinInput('tt-tp-price',-50)">▼</div>
+                            <input type="number" class="tier-price-edit" id="tt-tp-price" value="2000" min="0" title="Сумма премии" onclick="event.stopPropagation()">
+                            <div class="spin-btns">
+                                <div class="spin-btn" onclick="event.stopPropagation();spinInput('tt-tp-price',50)">▲</div>
+                                <div class="spin-btn" onclick="event.stopPropagation();spinInput('tt-tp-price',-50)">▼</div>
+                            </div>
                         </div>
+                        <label class="prem-toggle" onclick="event.stopPropagation()">
+                            <input type="checkbox" id="tt-premium-check">
+                            <div class="prem-toggle-track"></div>
+                        </label>
                     </div>
-                    </div>
+                </div>
                 </div>
             </div>
 
@@ -1401,6 +1423,21 @@
     </div>
 
     <script>
+
+    // ═══════════ MAINTENANCE CHECK ═══════════
+    (function() {
+        var params = new URLSearchParams(window.location.search);
+        var tgData = '';
+        try { tgData = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp.initData : ''; } catch(e) {}
+        // Check URL param or localStorage flag set by bot
+        var isMaintenance = params.get('maintenance') === '1' || localStorage.getItem('maintenance') === '1';
+        if (isMaintenance) {
+            var overlay = document.getElementById('maintenance-overlay');
+            if (overlay) overlay.classList.remove('hidden');
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(function(s){ s.style.display='none'; });
+        }
+    })();
 
     // Generate shooting stars
     (function() {
@@ -1569,35 +1606,39 @@
         var month = document.getElementById(p+'-month').value;
         var tiers = [];
 
+        var premiumBonus = 0;
+
         if (p === 'yt') {
             var yp1 = parseFloat(document.getElementById('yt-t1-price').value)||0;
             var yp2 = parseFloat(document.getElementById('yt-t2-price').value)||0;
             var ypp = parseFloat(document.getElementById('yt-tp-price').value)||0;
-            var ytpCount = parseInt(document.getElementById('yt-tp-count').value)||0;
-            // Обычные тиры — накопительная цена
-            // Премиум — считаются как обычные 50к+ (yp1+yp2) ПЛЮС бонус ypp сверху
+            var ytPremOn = document.getElementById('yt-premium-check').checked;
             tiers = [
-                { label: '5к+ просм.',    count: parseInt(document.getElementById('yt-t1-count').value)||0, cumPrice: yp1 },
-                { label: '50к+ просм.',   count: parseInt(document.getElementById('yt-t2-count').value)||0, cumPrice: yp1+yp2 },
-                { label: '🏆 100к+ просм.',count: ytpCount, cumPrice: yp1+yp2+ypp, premium: true }
+                { label: '5к+ просм.',  count: parseInt(document.getElementById('yt-t1-count').value)||0, cumPrice: yp1 },
+                { label: '50к+ просм.', count: parseInt(document.getElementById('yt-t2-count').value)||0, cumPrice: yp1+yp2 }
             ];
+            if (ytPremOn) premiumBonus = ypp;
         } else {
             var tp1 = parseFloat(document.getElementById('tt-t1-price').value)||0;
             var tp2 = parseFloat(document.getElementById('tt-t2-price').value)||0;
             var tp3 = parseFloat(document.getElementById('tt-t3-price').value)||0;
             var tpp = parseFloat(document.getElementById('tt-tp-price').value)||0;
-            var ttpCount = parseInt(document.getElementById('tt-tp-count').value)||0;
+            var ttPremOn = document.getElementById('tt-premium-check').checked;
             tiers = [
-                { label: '10к+ просм.',   count: parseInt(document.getElementById('tt-t1-count').value)||0, cumPrice: tp1 },
-                { label: '50к+ просм.',   count: parseInt(document.getElementById('tt-t2-count').value)||0, cumPrice: tp1+tp2 },
-                { label: '100к+ просм.',  count: parseInt(document.getElementById('tt-t3-count').value)||0, cumPrice: tp1+tp2+tp3 },
-                { label: '🏆 500к+ просм.',count: ttpCount, cumPrice: tp1+tp2+tp3+tpp, premium: true }
+                { label: '10к+ просм.',  count: parseInt(document.getElementById('tt-t1-count').value)||0, cumPrice: tp1 },
+                { label: '50к+ просм.',  count: parseInt(document.getElementById('tt-t2-count').value)||0, cumPrice: tp1+tp2 },
+                { label: '100к+ просм.', count: parseInt(document.getElementById('tt-t3-count').value)||0, cumPrice: tp1+tp2+tp3 }
             ];
+            if (ttPremOn) premiumBonus = tpp;
         }
 
         var totalVideos = tiers.reduce(function(a,t){ return a+t.count; }, 0);
-        var salary = tiers.reduce(function(a,t){ return a+(t.count*t.cumPrice); }, 0);
+        var salary = tiers.reduce(function(a,t){ return a+(t.count*t.cumPrice); }, 0) + premiumBonus;
         tiers.forEach(function(t){ t.total = t.count * t.cumPrice; });
+        // Add premium as display tier if active
+        if (premiumBonus > 0) {
+            tiers.push({ label: '🏆 Премия', count: 1, cumPrice: premiumBonus, total: premiumBonus, premium: true });
+        }
 
         var totalInput = parseInt(document.getElementById(p+'-total-videos').value) || 0;
         var missed = Math.max(0, totalInput - totalVideos);
